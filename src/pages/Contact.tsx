@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   MessageCircle, 
   Mail, 
@@ -29,31 +30,87 @@ const Contact = () => {
     message: "",
     files: null as FileList | null
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Here you would typically send the form data to your backend
-    console.log("Form submitted:", formData);
-    
-    toast({
-      title: "Quote Request Sent!",
-      description: "We'll get back to you within 2 hours with a custom quote.",
-    });
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      subject: "",
-      service: "",
-      deadline: "",
-      pages: "",
-      academicLevel: "",
-      message: "",
-      files: null
-    });
+    try {
+      // Upload files if any
+      const fileNames: string[] = [];
+      if (formData.files && formData.files.length > 0) {
+        for (let i = 0; i < formData.files.length; i++) {
+          const file = formData.files[i];
+          const fileName = `${Date.now()}-${file.name}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from("quote-files")
+            .upload(fileName, file);
+          
+          if (uploadError) {
+            console.error("File upload error:", uploadError);
+          } else {
+            fileNames.push(fileName);
+          }
+        }
+      }
+
+      // Submit quote request
+      const { data, error } = await supabase.functions.invoke("submit-quote", {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
+          service: formData.service,
+          deadline: formData.deadline,
+          pages: formData.pages,
+          academicLevel: formData.academicLevel,
+          message: formData.message,
+          fileNames,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Quote Request Sent!",
+        description: "We'll get back to you within 2 hours with a custom quote.",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        service: "",
+        deadline: "",
+        pages: "",
+        academicLevel: "",
+        message: "",
+        files: null
+      });
+
+      // Reset file input
+      const fileInput = document.getElementById("files") as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
+    } catch (error) {
+      console.error("Error submitting quote request:", error);
+      toast({
+        title: "Error",
+        description: "There was an error submitting your request. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -299,9 +356,9 @@ const Contact = () => {
                       </div>
                     </div>
 
-                    <Button type="submit" variant="academic" size="lg" className="w-full">
+                    <Button type="submit" variant="academic" size="lg" className="w-full" disabled={isSubmitting}>
                       <Send className="h-4 w-4" />
-                      Send Quote Request
+                      {isSubmitting ? "Sending..." : "Send Quote Request"}
                     </Button>
                   </form>
                 </CardContent>

@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      quote_requests: {
+        Row: {
+          academic_level: string
+          created_at: string | null
+          deadline: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          pages: number
+          phone: string | null
+          service: string
+          status: string | null
+          subject: string
+          updated_at: string | null
+        }
+        Insert: {
+          academic_level: string
+          created_at?: string | null
+          deadline: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          pages: number
+          phone?: string | null
+          service: string
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+        }
+        Update: {
+          academic_level?: string
+          created_at?: string | null
+          deadline?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          pages?: number
+          phone?: string | null
+          service?: string
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
