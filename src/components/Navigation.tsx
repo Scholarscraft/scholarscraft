@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, GraduationCap, MessageCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { Menu, X, GraduationCap, MessageCircle, User, LogOut } from "lucide-react";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -18,6 +22,14 @@ const Navigation = () => {
 
   const isActivePath = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed out successfully",
+      description: "You have been signed out of your account.",
+    });
   };
 
   return (
@@ -60,6 +72,24 @@ const Navigation = () => {
                 WhatsApp
               </a>
             </Button>
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button variant="premium" size="sm" asChild>
+                <Link to="/auth">
+                  <User className="h-4 w-4" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
             <Button variant="premium" size="sm" asChild>
               <Link to="/contact">Get Quote</Link>
             </Button>
@@ -101,6 +131,19 @@ const Navigation = () => {
                     WhatsApp
                   </a>
                 </Button>
+                {user ? (
+                  <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Button variant="premium" size="sm" className="w-full" asChild>
+                    <Link to="/auth">
+                      <User className="h-4 w-4" />
+                      Sign In
+                    </Link>
+                  </Button>
+                )}
                 <Button variant="premium" size="sm" className="w-full" asChild>
                   <Link to="/contact">Get Quote</Link>
                 </Button>

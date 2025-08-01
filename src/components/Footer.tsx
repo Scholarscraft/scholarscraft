@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { GraduationCap, Mail, MessageCircle, MapPin, Phone } from "lucide-react";
+import { GraduationCap, Mail, MessageCircle, MapPin, Facebook, Instagram, Send } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -20,20 +20,49 @@ const Footer = () => {
             <p className="text-sm opacity-90 mb-4 max-w-md">
               Professional academic writing services for students worldwide. We provide high-quality essays, research papers, dissertations, and editing services with guaranteed originality and timely delivery.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <a
                 href="https://wa.me/+1234567890"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-green-600 hover:bg-green-700 p-2 rounded-lg transition-colors"
+                title="WhatsApp"
               >
                 <MessageCircle className="h-5 w-5" />
               </a>
               <a
                 href="mailto:support@scholarcraft.com"
-                className="bg-primary-light hover:bg-primary-light/80 p-2 rounded-lg transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg transition-colors"
+                title="Email"
               >
                 <Mail className="h-5 w-5" />
+              </a>
+              <a
+                href="https://facebook.com/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-800 hover:bg-blue-900 p-2 rounded-lg transition-colors"
+                title="Facebook"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a
+                href="https://instagram.com/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-pink-600 hover:bg-pink-700 p-2 rounded-lg transition-colors"
+                title="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a
+                href="https://snapchat.com/add/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded-lg transition-colors"
+                title="Snapchat"
+              >
+                <Send className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -50,23 +79,50 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Social Media & Newsletter */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-accent" />
-                <span className="opacity-90">support@scholarcraft.com</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <MessageCircle className="h-4 w-4 text-accent" />
-                <span className="opacity-90">+1 (234) 567-8900</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-accent" />
-                <span className="opacity-90">Available Worldwide</span>
-              </li>
-            </ul>
+            <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
+            <p className="text-sm opacity-90 mb-4">
+              Stay updated with our latest news and updates
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <a
+                href="https://reddit.com/r/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 p-2 rounded hover:bg-primary-light/20 transition-colors"
+              >
+                <div className="w-4 h-4 bg-orange-600 rounded"></div>
+                <span>Reddit</span>
+              </a>
+              <a
+                href="https://discord.gg/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 p-2 rounded hover:bg-primary-light/20 transition-colors"
+              >
+                <div className="w-4 h-4 bg-indigo-600 rounded"></div>
+                <span>Discord</span>
+              </a>
+              <a
+                href="https://facebook.com/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 p-2 rounded hover:bg-primary-light/20 transition-colors"
+              >
+                <Facebook className="h-4 w-4 text-blue-400" />
+                <span>Facebook</span>
+              </a>
+              <a
+                href="https://instagram.com/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 p-2 rounded hover:bg-primary-light/20 transition-colors"
+              >
+                <Instagram className="h-4 w-4 text-pink-400" />
+                <span>Instagram</span>
+              </a>
+            </div>
           </div>
         </div>
 
