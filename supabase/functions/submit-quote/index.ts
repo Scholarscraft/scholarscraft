@@ -75,7 +75,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to client
     const clientEmailResponse = await resend.emails.send({
-      from: "ScholarCraft <noreply@scholarcraft.com>",
+      from: "ScholarCraft <noreply@bennangel4@gmail.com>",
       to: [email],
       subject: "Quote Request Received - ScholarCraft Academic Services",
       html: `
@@ -112,7 +112,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to admin
     const adminEmailResponse = await resend. emails.send({
-      from: "ScholarCraft <noreply@bennangel4@gmail.com>",
+      from: "ScholarCraft <noreply@bennangel4@gmaicom>",
       to: ["bennangel4@gmail.com"],
       subject: `New Quote Request from ${name}`,
       html: `
