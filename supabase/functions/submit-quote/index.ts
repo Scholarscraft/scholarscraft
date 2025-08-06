@@ -84,7 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <p>Dear ${name},</p>
           
-          <p>We have received your request for academic writing assistance. Our team will review your requirements and get back to you within 2 hours with a personalized quote.</p>
+          <p>We have received your request for academic writing assistance. Our team will review your requirements and get back to you within 5 minutes with a personalized quote.</p>
           
           <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #1e40af; margin-top: 0;">Request Details:</h3>
@@ -140,7 +140,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p><strong>Request ID:</strong> ${quoteData.id}</p>
           <p><strong>Submitted:</strong> ${new Date(quoteData.created_at).toLocaleString()}</p>
           
-          <p style="color: #dc2626; font-weight: bold;">Please respond to the client within 2 hours.</p>
+          <p style="color: #dc2626; font-weight: bold;">Please respond to the client within 5 minutes.</p>
         </div>
       `,
     });
