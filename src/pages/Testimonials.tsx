@@ -47,7 +47,8 @@ const CountingNumber = ({ end, suffix = "", duration = 2000 }) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
       
-      setCount(Math.floor(progress * end));
+      const currentValue = progress * end;
+      setCount(end % 1 === 0 ? Math.floor(currentValue) : Math.round(currentValue * 10) / 10);
       
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
@@ -60,7 +61,7 @@ const CountingNumber = ({ end, suffix = "", duration = 2000 }) => {
 
   return (
     <span ref={ref}>
-      {count.toLocaleString()}{suffix}
+      {end % 1 === 0 ? count.toLocaleString() : count}{suffix}
     </span>
   );
 };
