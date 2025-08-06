@@ -1,6 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 import { Star, Quote, GraduationCap, Award } from "lucide-react";
 
@@ -119,47 +127,52 @@ const Testimonials = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-border hover:border-accent transition-all duration-300 hover:shadow-xl h-full">
-                <CardHeader>
-                  <div className="flex items-center space-x-4 mb-4">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div>
-                      <CardTitle className="text-lg">{testimonial.name}</CardTitle>
-                      <CardDescription className="text-sm">{testimonial.university}</CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-1">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-accent text-accent" />
-                      ))}
-                    </div>
-                    <Badge variant="outline" className="text-xs">
-                      {testimonial.service}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <Quote className="absolute -top-2 -left-2 h-8 w-8 text-accent/20" />
-                    <p className="text-muted-foreground italic pl-6">"{testimonial.text}"</p>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <p className="text-sm text-muted-foreground">
-                      <GraduationCap className="inline h-4 w-4 mr-1" />
-                      {testimonial.course}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Carousel className="w-full max-w-5xl mx-auto">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <Card className="border-border hover:border-accent transition-all duration-500 hover:shadow-xl h-full">
+                    <CardHeader>
+                      <div className="flex items-center space-x-4 mb-4">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={testimonial.image} alt={testimonial.name} />
+                          <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-lg">{testimonial.name}</CardTitle>
+                          <CardDescription className="text-sm">{testimonial.university}</CardDescription>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-1">
+                          {[...Array(testimonial.rating)].map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-accent text-accent" />
+                          ))}
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {testimonial.service}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="relative">
+                        <Quote className="absolute -top-2 -left-2 h-8 w-8 text-accent/20" />
+                        <p className="text-muted-foreground italic pl-6">"{testimonial.text}"</p>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-sm text-muted-foreground">
+                          <GraduationCap className="inline h-4 w-4 mr-1" />
+                          {testimonial.course}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
 

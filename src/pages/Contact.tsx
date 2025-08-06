@@ -180,7 +180,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Response Time</h3>
-                    <p className="text-muted-foreground">Within 2 hours</p>
+                    <p className="text-muted-foreground">Immediately</p>
                     <p className="text-sm text-muted-foreground">24/7 customer support</p>
                   </div>
                 </div>
