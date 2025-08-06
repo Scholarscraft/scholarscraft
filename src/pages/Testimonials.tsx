@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 import { Star, Quote, GraduationCap, Award } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
 
 const Testimonials = () => {
   const testimonials = [
@@ -127,7 +128,18 @@ const Testimonials = () => {
             </p>
           </div>
 
-          <Carousel className="w-full max-w-5xl mx-auto">
+          <Carousel 
+            className="w-full max-w-5xl mx-auto"
+            plugins={[
+              Autoplay({
+                delay: 4000,
+              }),
+            ]}
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
             <CarouselContent className="-ml-2 md:-ml-4">
               {testimonials.map((testimonial, index) => (
                 <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
