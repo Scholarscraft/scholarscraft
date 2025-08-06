@@ -2,6 +2,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import { 
   BookOpen, 
   FileText, 
@@ -12,7 +19,11 @@ import {
   Clock,
   Shield,
   Award,
-  Users
+  Users,
+  ArrowRight,
+  UserCheck,
+  MessageSquare,
+  CreditCard
 } from "lucide-react";
 
 const Home = () => {
@@ -62,24 +73,68 @@ const Home = () => {
     }
   ];
 
+  const howItWorksSteps = [
+    {
+      step: "1",
+      icon: <MessageSquare className="h-8 w-8" />,
+      title: "Submit Your Requirements",
+      description: "Tell us about your assignment, deadline, and specific requirements. Our team will review and provide a custom quote."
+    },
+    {
+      step: "2",
+      icon: <CreditCard className="h-8 w-8" />,
+      title: "Make Payment",
+      description: "Choose your preferred payment method and complete the secure transaction. We offer multiple payment options for your convenience."
+    },
+    {
+      step: "3",
+      icon: <UserCheck className="h-8 w-8" />,
+      title: "Expert Assignment",
+      description: "Your project is assigned to a qualified writer with expertise in your subject area and academic level."
+    },
+    {
+      step: "4",
+      icon: <FileText className="h-8 w-8" />,
+      title: "Receive Your Paper",
+      description: "Get your completed assignment before the deadline with unlimited free revisions and a plagiarism report."
+    }
+  ];
+
   const testimonials = [
     {
       name: "Sarah Johnson",
       university: "Harvard University",
       rating: 5,
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=150&h=150&fit=crop&crop=face",
       text: "Exceptional quality and delivered on time. The research was thorough and the writing was perfect for my graduate-level course."
     },
     {
       name: "Michael Chen",
       university: "Oxford University",
       rating: 5,
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
       text: "Professional service with excellent communication. My dissertation received top marks thanks to their expert guidance."
     },
     {
       name: "Emma Thompson",
       university: "University of Toronto",
       rating: 5,
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       text: "Outstanding editing service! They transformed my rough draft into a polished academic paper that exceeded my expectations."
+    },
+    {
+      name: "David Rodriguez",
+      university: "Stanford University",
+      rating: 5,
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      text: "Amazing support team and quality work. They helped me understand complex concepts and delivered exactly what I needed."
+    },
+    {
+      name: "Lisa Wang",
+      university: "MIT",
+      rating: 5,
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
+      text: "The best academic writing service I've used. Professional, reliable, and always delivers top-quality work on time."
     }
   ];
 
@@ -159,8 +214,44 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
+      {/* How It Works Section */}
       <section className="py-20 bg-secondary/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              How It Works
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Simple steps to get your academic writing project completed by our expert writers.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {howItWorksSteps.map((step, index) => (
+              <div key={index} className="text-center relative">
+                {index < howItWorksSteps.length - 1 && (
+                  <div className="hidden lg:block absolute top-16 left-1/2 w-full h-0.5 bg-gradient-to-r from-accent to-transparent transform translate-x-1/2 z-0"></div>
+                )}
+                <div className="bg-accent text-accent-foreground w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
+                  {step.icon}
+                </div>
+                <div className="bg-primary text-primary-foreground w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-bold -mt-2">
+                  {step.step}
+                </div>
+                <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
+                <p className="text-muted-foreground">{step.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Button variant="academic" size="lg" asChild>
+              <Link to="/contact">Get Started Today</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -203,7 +294,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-secondary/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -213,24 +304,47 @@ const Home = () => {
               Real testimonials from students who achieved academic success with our help.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-border hover:border-accent transition-all duration-300 hover:shadow-lg">
-                <CardHeader>
-                  <div className="flex items-center space-x-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-accent text-accent" />
-                    ))}
-                  </div>
-                  <CardTitle className="text-lg">{testimonial.name}</CardTitle>
-                  <CardDescription>{testimonial.university}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">"{testimonial.text}"</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 4000,
+              }),
+            ]}
+            className="w-full max-w-5xl mx-auto"
+          >
+            <CarouselContent>
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                  <Card className="border-border hover:border-accent transition-all duration-300 hover:shadow-lg h-full">
+                    <CardHeader>
+                      <div className="flex items-center space-x-4 mb-4">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
+                          <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-lg">{testimonial.name}</CardTitle>
+                          <CardDescription>{testimonial.university}</CardDescription>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-accent text-accent" />
+                        ))}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground italic">"{testimonial.text}"</p>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
           <div className="text-center mt-12">
             <Button variant="outline" size="lg" asChild>
               <Link to="/testimonials">Read More Reviews</Link>

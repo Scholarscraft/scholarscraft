@@ -56,11 +56,11 @@ const Footer = () => {
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://snapchat.com/add/scholarcraft"
+                href="https://t.me/scholarcraft"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-yellow-500 hover:bg-yellow-600 p-2 rounded-lg transition-colors"
-                title="Snapchat"
+                className="bg-blue-500 hover:bg-blue-600 p-2 rounded-lg transition-colors"
+                title="Telegram"
               >
                 <Send className="h-5 w-5" />
               </a>
@@ -75,6 +75,7 @@ const Footer = () => {
               <li><Link to="/pricing" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Pricing</Link></li>
               <li><Link to="/samples" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Sample Work</Link></li>
               <li><Link to="/testimonials" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Testimonials</Link></li>
+              <li><Link to="/testimonials#faq" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">FAQs</Link></li>
               <li><Link to="/contact" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Contact Us</Link></li>
             </ul>
           </div>
@@ -121,6 +122,15 @@ const Footer = () => {
               >
                 <Instagram className="h-4 w-4 text-pink-400" />
                 <span>Instagram</span>
+              </a>
+              <a
+                href="https://t.me/scholarcraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 p-2 rounded hover:bg-primary-light/20 transition-colors"
+              >
+                <Send className="h-4 w-4 text-blue-400" />
+                <span>Telegram</span>
               </a>
             </div>
           </div>
