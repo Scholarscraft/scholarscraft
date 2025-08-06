@@ -152,9 +152,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">WhatsApp</h3>
-                    <p className="text-muted-foreground">+1 (234) 567-8900</p>
+                    <p className="text-muted-foreground">+1 480 247 1779</p>
                     <Button variant="link" className="p-0 h-auto" asChild>
-                      <a href="https://wa.me/+1234567890" target="_blank" rel="noopener noreferrer">
+                      <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
                         Chat Now
                       </a>
                     </Button>
@@ -167,9 +167,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Email</h3>
-                    <p className="text-muted-foreground">support@scholarscraft.com</p>
+                    <p className="text-muted-foreground">bennangel4@gmail.com</p>
                     <Button variant="link" className="p-0 h-auto" asChild>
-                      <a href="mailto:support@scholarscraft.com">Send Email</a>
+                      <a href="mailto:bennangel4@gmail.com">Send Email</a>
                     </Button>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ const Contact = () => {
                 </CardHeader>
                 <CardContent>
                   <Button variant="premium" className="w-full" asChild>
-                    <a href="https://wa.me/+1234567890" target="_blank" rel="noopener noreferrer">
+                    <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="h-4 w-4" />
                       WhatsApp Us Now
                     </a>
@@ -246,7 +246,7 @@ const Contact = () => {
                           id="phone"
                           value={formData.phone}
                           onChange={(e) => handleInputChange("phone", e.target.value)}
-                          placeholder="+1 (234) 567-8900"
+                          placeholder="+1 480 247 1779"
                         />
                       </div>
                       <div>

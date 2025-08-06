@@ -22,7 +22,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-3">
               <a
-                href="https://wa.me/+1234567890"
+                href="https://wa.me/+14802471779"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-green-600 hover:bg-green-700 p-2 rounded-lg transition-colors"
@@ -31,7 +31,7 @@ const Footer = () => {
                 <MessageCircle className="h-5 w-5" />
               </a>
               <a
-                href="mailto:support@scholarscraft.com"
+                href="mailto:bennangel4@gmail.com"
                 className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg transition-colors"
                 title="Email"
               >
