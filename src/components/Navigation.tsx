@@ -68,12 +68,6 @@ const Navigation = () => {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Button variant="outline" size="sm" asChild>
-              <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </a>
-            </Button>
             {user ? (
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-muted-foreground">
@@ -130,12 +124,6 @@ const Navigation = () => {
                 <div className="flex justify-center mb-2">
                   <ThemeToggle />
                 </div>
-                <Button variant="outline" size="sm" className="w-full" asChild>
-                  <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="h-4 w-4" />
-                    WhatsApp
-                  </a>
-                </Button>
                 {user ? (
                   <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
                     <LogOut className="h-4 w-4" />

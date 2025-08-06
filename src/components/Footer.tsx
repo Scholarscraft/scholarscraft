@@ -31,7 +31,7 @@ const Footer = () => {
                 <MessageCircle className="h-5 w-5" />
               </a>
               <a
-                href="mailto:support@scholarcraft.com"
+                href="mailto:support@scholarscraft.com"
                 className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg transition-colors"
                 title="Email"
               >

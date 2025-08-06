@@ -167,9 +167,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Email</h3>
-                    <p className="text-muted-foreground">support@scholarcraft.com</p>
+                    <p className="text-muted-foreground">support@scholarscraft.com</p>
                     <Button variant="link" className="p-0 h-auto" asChild>
-                      <a href="mailto:support@scholarcraft.com">Send Email</a>
+                      <a href="mailto:support@scholarscraft.com">Send Email</a>
                     </Button>
                   </div>
                 </div>
