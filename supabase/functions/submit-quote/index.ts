@@ -97,7 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
             ${fileNames && fileNames.length > 0 ? `<p><strong>Uploaded Files:</strong> ${fileNames.join(', ')}</p>` : ''}
           </div>
           
-          <p>If you have any urgent questions, feel free to contact us via WhatsApp at <a href="https://wa.me/+1234567890">+1 (234) 567-8900</a>.</p>
+          <p>If you have any urgent questions, feel free to contact us via WhatsApp at <a href="https://wa.me/+14802471779">+1 (480) 247-1779</a>.</p>
           
           <p>Best regards,<br>
           The ScholarCraft Team</p>
@@ -111,8 +111,8 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     // Send notification email to admin
-    const adminEmailResponse = await resend. emails.send({
-      from: "ScholarCraft <noreply@bennangel4@gmaicom>",
+    const adminEmailResponse = await resend.emails.send({
+      from: "ScholarCraft <noreply@bennangel4@gmail.com>",
       to: ["bennangel4@gmail.com"],
       subject: `New Quote Request from ${name}`,
       html: `
