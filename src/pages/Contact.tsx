@@ -78,7 +78,7 @@ const Contact = () => {
 
       toast({
         title: "Quote Request Sent!",
-        description: "We'll get back to you within 2 hours with a custom quote.",
+        description: "We'll get back to you shortly.",
       });
 
       // Reset form
@@ -210,7 +210,7 @@ const Contact = () => {
                 <CardHeader>
                   <CardTitle className="text-2xl">Request Your Free Quote</CardTitle>
                   <CardDescription>
-                    Fill out the form below and we'll send you a personalized quote within 2 hours.
+                    Fill out the form below and we'll send you a personalized quote shortly.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
