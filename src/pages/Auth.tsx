@@ -122,7 +122,7 @@ const Auth = () => {
               <GraduationCap className="h-8 w-8 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-primary">ScholarCraft</h1>
+              <h1 className="text-2xl font-bold text-primary">ScholarsCraft</h1>
               <p className="text-sm text-muted-foreground">Academic Writing Services</p>
             </div>
           </Link>

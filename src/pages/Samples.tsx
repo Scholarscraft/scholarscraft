@@ -1,10 +1,25 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import SampleModal from "@/components/SampleModal";
 import { Download, Eye, FileText, Star, GraduationCap, Clock } from "lucide-react";
 
 const Samples = () => {
+  const [selectedSample, setSelectedSample] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openSampleModal = (sample: any) => {
+    setSelectedSample(sample);
+    setIsModalOpen(true);
+  };
+
+  const closeSampleModal = () => {
+    setIsModalOpen(false);
+    setSelectedSample(null);
+  };
+
   const samples = [
     {
       title: "The Impact of Social Media on Modern Marketing Strategies",
@@ -179,7 +194,12 @@ const Samples = () => {
                   </div>
 
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => openSampleModal(sample)}
+                    >
                       <Eye className="h-4 w-4" />
                       Preview
                     </Button>
@@ -244,6 +264,12 @@ const Samples = () => {
           </div>
         </div>
       </section>
+
+      <SampleModal 
+        sample={selectedSample}
+        isOpen={isModalOpen}
+        onClose={closeSampleModal}
+      />
     </div>
   );
 };

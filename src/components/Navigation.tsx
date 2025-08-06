@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Menu, X, GraduationCap, MessageCircle, User, LogOut } from "lucide-react";
 
 const Navigation = () => {
@@ -42,7 +43,7 @@ const Navigation = () => {
               <GraduationCap className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-primary">ScholarCraft</h1>
+              <h1 className="text-xl font-bold text-primary">ScholarsCraft</h1>
               <p className="text-xs text-muted-foreground">Academic Writing Services</p>
             </div>
           </Link>
@@ -66,8 +67,9 @@ const Navigation = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             <Button variant="outline" size="sm" asChild>
-              <a href="https://wa.me/+1234567890" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
               </a>
@@ -125,8 +127,11 @@ const Navigation = () => {
                 </Link>
               ))}
               <div className="pt-4 pb-2 space-y-2">
+                <div className="flex justify-center mb-2">
+                  <ThemeToggle />
+                </div>
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <a href="https://wa.me/+1234567890" target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="h-4 w-4" />
                     WhatsApp
                   </a>

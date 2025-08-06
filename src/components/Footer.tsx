@@ -13,7 +13,7 @@ const Footer = () => {
                 <GraduationCap className="h-6 w-6 text-accent-foreground" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">ScholarCraft</h3>
+                <h3 className="text-xl font-bold">ScholarsCraft</h3>
                 <p className="text-sm opacity-90">Academic Writing Services</p>
               </div>
             </div>
@@ -129,7 +129,7 @@ const Footer = () => {
         <div className="border-t border-primary-light/20 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm opacity-90">
-              © 2024 ScholarCraft. All rights reserved.
+              © 2024 ScholarsCraft. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link to="/privacy" className="text-sm opacity-90 hover:opacity-100 hover:text-accent transition-colors">
