@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { supabase } from "@/integrations/supabase/client";
-import { Menu, X, GraduationCap, MessageCircle, User, LogOut, Settings } from "lucide-react";
+import { Menu, X, GraduationCap, MessageCircle, User, LogOut, Settings, Shield } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ const Navigation = () => {
   const [profileData, setProfileData] = useState<{avatar_url?: string; display_name?: string} | null>(null);
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
   const { toast } = useToast();
 
   // Fetch profile data when user changes
@@ -152,12 +154,14 @@ const Navigation = () => {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/admin" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Admin Panel
-                    </Link>
-                  </DropdownMenuItem>
+                  {isAdmin() && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="flex items-center">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -229,12 +233,14 @@ const Navigation = () => {
                         Dashboard
                       </Link>
                     </Button>
-                    <Button variant="outline" size="sm" className="w-full" asChild>
-                      <Link to="/admin">
-                        <Settings className="h-4 w-4" />
-                        Admin Panel
-                      </Link>
-                    </Button>
+                    {isAdmin() && (
+                      <Button variant="outline" size="sm" className="w-full" asChild>
+                        <Link to="/admin">
+                          <Shield className="h-4 w-4" />
+                          Admin Panel
+                        </Link>
+                      </Button>
+                    )}
                     <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
                       <LogOut className="h-4 w-4" />
                       Sign Out

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,8 +111,9 @@ const mockTrafficData = [
 
 const Admin = () => {
   const { user } = useAuth();
+  const { role, loading: roleLoading, isAdmin } = useUserRole();
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [orders, setOrders] = useState<Order[]>([]);
@@ -145,22 +148,31 @@ const Admin = () => {
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
-  // Check admin role
+  // Check admin access and redirect if not authorized
   useEffect(() => {
-    const checkAdminRole = async () => {
+    if (!roleLoading) {
       if (!user) {
-        setLoading(false);
+        navigate('/auth');
         return;
       }
-      setIsAdmin(true);
+      
+      if (!isAdmin()) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to access the admin panel.",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+      
       setLoading(false);
-    };
-    checkAdminRole();
-  }, [user]);
+    }
+  }, [user, roleLoading, isAdmin, navigate, toast]);
 
   // Fetch all data
   useEffect(() => {
-    if (!isAdmin) return;
+    if (loading || !isAdmin()) return;
 
     const fetchDashboardData = async () => {
       try {
@@ -237,7 +249,7 @@ const Admin = () => {
     };
 
     fetchDashboardData();
-  }, [isAdmin, toast]);
+  }, [loading, isAdmin, toast]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -1683,23 +1695,48 @@ const Admin = () => {
     }
   };
 
-  if (loading) {
+  if (roleLoading || loading) {
     return (
       <div className="container mx-auto py-8">
         <div className="flex items-center justify-center min-h-[400px]">
-          <RefreshCw className="h-8 w-8 animate-spin" />
+          <div className="flex flex-col items-center space-y-4">
+            <RefreshCw className="h-8 w-8 animate-spin" />
+            <p className="text-muted-foreground">Loading admin panel...</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user) {
     return (
       <div className="container mx-auto py-8">
         <Card>
           <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>You don't have admin privileges to access this page</CardDescription>
+            <CardTitle className="flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2 text-destructive" />
+              Authentication Required
+            </CardTitle>
+            <CardDescription>Please sign in to access the admin panel</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin()) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2 text-destructive" />
+              Access Denied
+            </CardTitle>
+            <CardDescription>
+              You don't have admin privileges to access this page. 
+              {role ? ` Current role: ${role}` : ' No role assigned.'}
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>
