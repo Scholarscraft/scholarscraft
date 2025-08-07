@@ -76,9 +76,9 @@ const Auth = () => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/auth`;
       
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -96,9 +96,24 @@ const Auth = () => {
           setError(signUpError.message);
         }
       } else {
+        // Send custom styled confirmation email
+        if (data.user && !data.user.email_confirmed_at) {
+          const { error: emailError } = await supabase.functions.invoke('send-confirmation-email', {
+            body: {
+              email,
+              confirmationLink: redirectUrl,
+              displayName,
+            },
+          });
+
+          if (emailError) {
+            console.warn("Custom confirmation email failed, but default email should still work:", emailError);
+          }
+        }
+
         toast({
           title: "Account created successfully!",
-          description: "Please check your email to verify your account.",
+          description: "Please check your email and click the confirmation link to verify your account.",
         });
       }
     } catch (err) {
