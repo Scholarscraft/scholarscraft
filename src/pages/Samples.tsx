@@ -201,8 +201,8 @@ const Samples = () => {
               </Card>
             ))}
           </div>
-          </div>
           )}
+        </div>
       </section>
 
       {/* Subjects We Cover */}
