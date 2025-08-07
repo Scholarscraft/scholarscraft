@@ -31,8 +31,11 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  Send
+  Send,
+  UserCheck,
+  Eye
 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from "date-fns";
 
 interface Order {
@@ -84,6 +87,25 @@ interface AdminStats {
   openTickets: number;
   totalTickets: number;
 }
+
+// Mock data for analytics
+const mockTrafficData = [
+  { date: 'Jan 1', visitors: 1200, pageViews: 3400 },
+  { date: 'Jan 2', visitors: 1100, pageViews: 3200 },
+  { date: 'Jan 3', visitors: 1300, pageViews: 3800 },
+  { date: 'Jan 4', visitors: 1500, pageViews: 4200 },
+  { date: 'Jan 5', visitors: 1400, pageViews: 4000 },
+  { date: 'Jan 6', visitors: 1600, pageViews: 4500 },
+  { date: 'Jan 7', visitors: 1800, pageViews: 5000 },
+  { date: 'Jan 8', visitors: 1700, pageViews: 4800 },
+  { date: 'Jan 9', visitors: 1900, pageViews: 5200 },
+  { date: 'Jan 10', visitors: 2000, pageViews: 5500 },
+  { date: 'Jan 11', visitors: 1850, pageViews: 5100 },
+  { date: 'Jan 12', visitors: 1950, pageViews: 5300 },
+  { date: 'Jan 13', visitors: 2100, pageViews: 5800 },
+  { date: 'Jan 14', visitors: 2200, pageViews: 6000 },
+  { date: 'Jan 15', visitors: 2150, pageViews: 5900 },
+];
 
 const Admin = () => {
   const { user } = useAuth();
@@ -629,6 +651,244 @@ const Admin = () => {
     </div>
   );
 
+  const renderAnalytics = () => (
+    <div className="space-y-8">
+      {/* Core Metrics */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Core Metrics & Insights</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Visitors</p>
+                  <p className="text-3xl font-bold">24,567</p>
+                  <p className="text-sm text-green-600">+12.3% from last month</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Unique Visitors</p>
+                  <p className="text-3xl font-bold">18,294</p>
+                  <p className="text-sm text-green-600">+8.7% from last month</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                  <UserCheck className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Page Views</p>
+                  <p className="text-3xl font-bold">89,432</p>
+                  <p className="text-sm text-green-600">+15.2% from last month</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                  <Eye className="h-6 w-6 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Sessions</p>
+                  <p className="text-3xl font-bold">31,205</p>
+                  <p className="text-sm text-red-600">-2.1% from last month</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-orange-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Traffic Overview Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Traffic Overview</CardTitle>
+          <CardDescription>Daily visitors over the last 30 days</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={mockTrafficData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="visitors" stroke="hsl(var(--primary))" strokeWidth={2} />
+                <Line type="monotone" dataKey="pageViews" stroke="hsl(var(--accent))" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Traffic Sources & Geographic Data */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Traffic Sources */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Traffic Sources</CardTitle>
+            <CardDescription>Where your visitors are coming from</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                  <span className="font-medium">Direct Traffic</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">8,456</p>
+                  <p className="text-sm text-muted-foreground">34.4%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                  <span className="font-medium">Organic Search</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">6,789</p>
+                  <p className="text-sm text-muted-foreground">27.6%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className="h-3 w-3 rounded-full bg-purple-500"></div>
+                  <span className="font-medium">Social Media</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">4,123</p>
+                  <p className="text-sm text-muted-foreground">16.8%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className="h-3 w-3 rounded-full bg-orange-500"></div>
+                  <span className="font-medium">Referrals</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">3,234</p>
+                  <p className="text-sm text-muted-foreground">13.2%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                  <span className="font-medium">Paid Ads</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">1,965</p>
+                  <p className="text-sm text-muted-foreground">8.0%</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Geographic Data */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Geographic Data</CardTitle>
+            <CardDescription>Visitor locations by country</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🇺🇸</span>
+                  <span className="font-medium">United States</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">12,456</p>
+                  <p className="text-sm text-muted-foreground">50.7%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🇬🇧</span>
+                  <span className="font-medium">United Kingdom</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">3,789</p>
+                  <p className="text-sm text-muted-foreground">15.4%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🇨🇦</span>
+                  <span className="font-medium">Canada</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">2,134</p>
+                  <p className="text-sm text-muted-foreground">8.7%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🇦🇺</span>
+                  <span className="font-medium">Australia</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">1,876</p>
+                  <p className="text-sm text-muted-foreground">7.6%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🇩🇪</span>
+                  <span className="font-medium">Germany</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">1,432</p>
+                  <p className="text-sm text-muted-foreground">5.8%</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🌍</span>
+                  <span className="font-medium">Others</span>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">2,880</p>
+                  <p className="text-sm text-muted-foreground">11.7%</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
@@ -641,6 +901,8 @@ const Admin = () => {
         return renderUsers();
       case "emails":
         return renderBulkEmail();
+      case "analytics":
+        return renderAnalytics();
       default:
         return (
           <div className="space-y-6">
