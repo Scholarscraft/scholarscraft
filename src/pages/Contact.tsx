@@ -28,6 +28,7 @@ const Contact = () => {
     pages: "",
     academicLevel: "",
     message: "",
+    couponCode: "",
     files: null as FileList | null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,6 +69,7 @@ const Contact = () => {
           pages: formData.pages,
           academicLevel: formData.academicLevel,
           message: formData.message,
+          couponCode: formData.couponCode,
           fileNames,
         },
       });
@@ -92,6 +94,7 @@ const Contact = () => {
         pages: "",
         academicLevel: "",
         message: "",
+        couponCode: "",
         files: null
       });
 
@@ -354,6 +357,16 @@ const Contact = () => {
                           />
                         </label>
                       </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="couponCode">Coupon Code (Optional)</Label>
+                      <Input
+                        id="couponCode"
+                        value={formData.couponCode}
+                        onChange={(e) => handleInputChange("couponCode", e.target.value)}
+                        placeholder="Enter coupon code for discount"
+                      />
                     </div>
 
                     <Button type="submit" variant="academic" size="lg" className="w-full" disabled={isSubmitting}>
