@@ -420,13 +420,13 @@ const Dashboard = () => {
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="icon"
                         disabled={uploadingAvatar}
                         onClick={() => document.getElementById('avatar-upload')?.click()}
-                        className="flex items-center gap-2"
+                        className="h-10 w-10"
+                        title={uploadingAvatar ? "Uploading..." : "Upload Image"}
                       >
                         <Upload className="h-4 w-4" />
-                        {uploadingAvatar ? "Uploading..." : "Upload Image"}
                       </Button>
                       <input
                         id="avatar-upload"
