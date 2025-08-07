@@ -22,7 +22,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if user is already logged in and handle password reset
+  // Check if user is already logged in and handle password reset or email confirmation
   useEffect(() => {
     // First check if this is a password reset flow
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -30,6 +30,31 @@ const Auth = () => {
     const refreshToken = hashParams.get('refresh_token');
     const type = hashParams.get('type');
 
+    // Handle email confirmation
+    if (type === 'signup' && accessToken && refreshToken) {
+      console.log('Email confirmation flow detected');
+      // Set the session from the tokens
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      }).then(({ error }) => {
+        if (error) {
+          console.error('Error setting session for email confirmation:', error);
+          setError('Invalid confirmation link. Please try again.');
+        } else {
+          toast({
+            title: "Email confirmed successfully!",
+            description: "Welcome to ScholarsCraft! You can now access all features.",
+          });
+          // Clear the URL hash and redirect to home
+          window.history.replaceState(null, '', '/');
+          navigate("/");
+        }
+      });
+      return;
+    }
+
+    // Handle password reset flow
     if (type === 'recovery' && accessToken && refreshToken) {
       console.log('Password reset flow detected');
       setShowPasswordReset(true);
@@ -57,7 +82,7 @@ const Auth = () => {
     };
 
     checkUser();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
