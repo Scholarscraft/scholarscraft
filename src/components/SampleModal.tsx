@@ -109,11 +109,6 @@ This sample represents the high-quality academic work that consistently achieves
                   Order Similar Paper
                 </Link>
               </Button>
-              <Button className="w-full" variant="secondary" asChild>
-                <Link to={`/samples/${sample.id}`} onClick={onClose}>
-                  View Full Text
-                </Link>
-              </Button>
               <Button 
                 variant="outline" 
                 className="w-full" 
@@ -135,8 +130,12 @@ This sample represents the high-quality academic work that consistently achieves
             <ScrollArea className="h-[60vh] pr-4">
               {sample.file_url && sample.file_url.endsWith('.pdf') ? (
                 <div className="w-full">
-                  <div className="text-muted-foreground text-sm mb-4 p-3 bg-muted/50 rounded-lg border-l-4 border-primary">
-                    <strong>Document Preview:</strong> This is a preview of the actual sample paper. Use the controls to navigate and zoom.
+                  <div className="text-muted-foreground text-sm mb-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Download className="h-4 w-4 text-primary" />
+                      <strong className="text-primary">Download Required</strong>
+                    </div>
+                    <p>This is a limited preview. Download the complete sample to view the full document with all formatting, citations, and content.</p>
                   </div>
                   <PDFViewer 
                     fileUrl={sample.file_url} 
@@ -147,9 +146,14 @@ This sample represents the high-quality academic work that consistently achieves
                 </div>
               ) : (
                 <div className="prose prose-sm max-w-none dark:prose-invert">
-                  <div className="text-muted-foreground text-sm mb-4 p-3 bg-muted/50 rounded-lg border-l-4 border-primary">
-                    <strong>Note:</strong> This is a preview of the academic work. The full document contains additional research, analysis, and properly formatted citations.
+                  <div className="text-muted-foreground text-sm mb-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Download className="h-4 w-4 text-primary" />
+                      <strong className="text-primary">Download Required</strong>
+                    </div>
+                    <p>This is a limited preview. Download the complete sample to view the full document with all formatting, citations, and content.</p>
                   </div>
+                  <h3 className="text-lg font-semibold text-primary mb-3">Abstract</h3>
                   
                   <div className="whitespace-pre-line text-sm leading-relaxed">
                     {fullContent}
