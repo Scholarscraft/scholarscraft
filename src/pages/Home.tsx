@@ -144,7 +144,7 @@ const Home = () => {
       <section className="relative bg-gradient-to-br from-primary via-primary-light to-accent py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-primary-foreground">
-          <Badge variant="secondary" className="mb-6 bg-accent/20 text-accent-foreground border-accent/30">
+          <Badge variant="secondary" className="mb-6 bg-accent/20 text-white border-accent/30">
             Trusted by 10,000+ Students Worldwide
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">

@@ -179,6 +179,19 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        {/* Offers Banner */}
+        <div className="mb-8 bg-gradient-to-r from-accent to-accent-light rounded-lg p-6 text-accent-foreground">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Special Offer!</h3>
+              <p className="text-sm opacity-90">Get 20% off your first order. Use code: WELCOME20</p>
+            </div>
+            <Button variant="outline" size="sm" className="bg-white/20 border-white/30 text-white hover:bg-white/30">
+              Claim Now
+            </Button>
+          </div>
+        </div>
+        
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
