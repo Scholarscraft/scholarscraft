@@ -110,7 +110,7 @@ This sample represents the high-quality academic work that consistently achieves
                 </Link>
               </Button>
               <Button className="w-full" variant="secondary" asChild>
-                <Link to={`/samples/${sample.id || sample.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} onClick={onClose}>
+                <Link to={`/samples/${sample.id}`} onClick={onClose}>
                   View Full Text
                 </Link>
               </Button>
