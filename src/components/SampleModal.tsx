@@ -6,6 +6,7 @@ import { Star, FileText, Calendar, User, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Sample {
+  id?: string;
   title: string;
   type: string;
   level: string;
@@ -119,6 +120,11 @@ This sample demonstrates our commitment to academic excellence and our ability t
               <Button className="w-full" asChild>
                 <Link to="/contact" onClick={onClose}>
                   Order Similar Paper
+                </Link>
+              </Button>
+              <Button className="w-full" variant="secondary" asChild>
+                <Link to={`/samples/${sample.id || sample.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} onClick={onClose}>
+                  View Full Text
                 </Link>
               </Button>
               <Button 

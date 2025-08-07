@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Pricing from "./pages/Pricing";
 import Samples from "./pages/Samples";
+import SampleDetail from "./pages/SampleDetail";
 import Testimonials from "./pages/Testimonials";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="/services" element={<Services />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/samples" element={<Samples />} />
+                <Route path="/samples/:id" element={<SampleDetail />} />
                 <Route path="/testimonials" element={<Testimonials />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/auth" element={<Auth />} />

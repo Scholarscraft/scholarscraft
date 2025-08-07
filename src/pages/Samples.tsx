@@ -39,6 +39,7 @@ const Samples = () => {
 
       // Transform data to match existing format
       const transformedSamples = data?.map(paper => ({
+        id: paper.id,
         title: paper.title,
         type: paper.category,
         level: paper.academic_level,
