@@ -24,36 +24,39 @@ const Auth = () => {
 
   // Check if user is already logged in and handle password reset
   useEffect(() => {
+    // First check if this is a password reset flow
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
+
+    if (type === 'recovery' && accessToken && refreshToken) {
+      console.log('Password reset flow detected');
+      setShowPasswordReset(true);
+      // Set the session from the tokens for password update capability
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      }).then(({ error }) => {
+        if (error) {
+          console.error('Error setting session for password reset:', error);
+          setError('Invalid reset link. Please try again.');
+          setShowPasswordReset(false);
+        }
+      });
+      return; // Don't run normal auth check during password reset
+    }
+
+    // Only check for existing session if not in password reset flow
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
+        console.log('User already logged in, redirecting to home');
         navigate("/");
       }
     };
 
-    // Check if this is a password reset flow
-    const handlePasswordReset = async () => {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const accessToken = hashParams.get('access_token');
-      const refreshToken = hashParams.get('refresh_token');
-      const type = hashParams.get('type');
-
-      if (type === 'recovery' && accessToken && refreshToken) {
-        setShowPasswordReset(true);
-        // Set the session from the tokens
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-        
-        if (error) {
-          setError('Invalid reset link. Please try again.');
-        }
-      }
-    };
-
     checkUser();
-    handlePasswordReset();
   }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
