@@ -16,10 +16,13 @@ const Auth = () => {
   const [error, setError] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Check if user is already logged in
+  // Check if user is already logged in and handle password reset
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -27,7 +30,30 @@ const Auth = () => {
         navigate("/");
       }
     };
+
+    // Check if this is a password reset flow
+    const handlePasswordReset = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      const type = hashParams.get('type');
+
+      if (type === 'recovery' && accessToken && refreshToken) {
+        setShowPasswordReset(true);
+        // Set the session from the tokens
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        
+        if (error) {
+          setError('Invalid reset link. Please try again.');
+        }
+      }
+    };
+
     checkUser();
+    handlePasswordReset();
   }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -154,6 +180,142 @@ const Auth = () => {
       setIsLoading(false);
     }
   };
+
+  const handlePasswordReset = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    if (newPassword.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        toast({
+          title: "Password updated successfully!",
+          description: "You can now sign in with your new password.",
+        });
+        
+        // Clear the URL hash and redirect to home
+        window.history.replaceState(null, '', '/auth');
+        navigate("/");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (showPasswordReset) {
+    return (
+      <div className="min-h-screen pt-16 bg-gradient-to-br from-secondary/30 to-primary/5 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Logo and Header */}
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center space-x-3 mb-4">
+              <div className="bg-gradient-to-r from-primary to-primary-light p-3 rounded-lg">
+                <GraduationCap className="h-8 w-8 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">ScholarsCraft</h1>
+                <p className="text-sm text-muted-foreground">Academic Writing Services</p>
+              </div>
+            </Link>
+          </div>
+
+          <Card className="border-border shadow-elegant">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Set New Password</CardTitle>
+              <CardDescription>
+                Enter your new password below
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handlePasswordReset} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="new-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter new password (min. 6 characters)"
+                      className="pl-10 pr-10"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="confirm-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Confirm new password"
+                      className="pl-10"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Updating..." : "Update Password"}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div className="text-center mt-6">
+            <Link 
+              to="/" 
+              className="text-sm text-muted-foreground hover:text-accent transition-colors"
+            >
+              ← Back to home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (showForgotPassword) {
     return (
