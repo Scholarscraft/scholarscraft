@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, Clock, DollarSign, FileText, Settings, User } from "lucide-react";
+import { CalendarDays, Clock, DollarSign, FileText, Settings, User, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -51,6 +51,7 @@ const Dashboard = () => {
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Redirect if not authenticated
   if (!loading && !user) {
@@ -142,6 +143,70 @@ const Dashboard = () => {
         description: "Failed to update profile",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type and size
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast({
+        title: "Error", 
+        description: "Image must be less than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingAvatar(true);
+
+    try {
+      // Create unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Update avatar URL
+      setAvatarUrl(data.publicUrl);
+
+      toast({
+        title: "Success",
+        description: "Avatar uploaded successfully",
+      });
+
+      // Reset file input
+      event.target.value = '';
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload avatar",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -351,14 +416,27 @@ const Dashboard = () => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="space-y-2">
-                    <Label htmlFor="avatar-url">Avatar URL</Label>
-                    <Input
-                      id="avatar-url"
-                      value={avatarUrl}
-                      onChange={(e) => setAvatarUrl(e.target.value)}
-                      placeholder="https://example.com/avatar.jpg"
-                      className="w-full max-w-md"
-                    />
+                    <Label htmlFor="avatar-upload">Profile Picture</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingAvatar}
+                        onClick={() => document.getElementById('avatar-upload')?.click()}
+                        className="flex items-center gap-2"
+                      >
+                        <Upload className="h-4 w-4" />
+                        {uploadingAvatar ? "Uploading..." : "Upload Image"}
+                      </Button>
+                      <input
+                        id="avatar-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">JPG, PNG up to 5MB</p>
                   </div>
                 </div>
 
