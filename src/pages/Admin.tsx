@@ -243,29 +243,29 @@ const Admin = () => {
     switch (status) {
       case 'completed':
       case 'closed':
-        return 'bg-green-500';
+        return 'default';
       case 'in_progress':
-        return 'bg-blue-500';
+        return 'secondary';
       case 'pending':
       case 'open':
-        return 'bg-yellow-500';
+        return 'outline';
       case 'cancelled':
-        return 'bg-red-500';
+        return 'destructive';
       default:
-        return 'bg-gray-500';
+        return 'secondary';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-500';
+        return 'destructive';
       case 'medium':
-        return 'bg-yellow-500';
+        return 'outline';
       case 'low':
-        return 'bg-green-500';
+        return 'default';
       default:
-        return 'bg-gray-500';
+        return 'secondary';
     }
   };
 
@@ -408,9 +408,9 @@ const Admin = () => {
                     <div className="font-medium">{order.order_id}</div>
                     <div className="text-sm text-muted-foreground">{order.topic}</div>
                   </div>
-                  <Badge className={getStatusColor(order.status)}>
-                    {order.status}
-                  </Badge>
+                   <Badge variant={getStatusColor(order.status)}>
+                     {order.status}
+                   </Badge>
                 </div>
               ))}
             </div>
@@ -432,12 +432,12 @@ const Admin = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className={getPriorityColor(ticket.priority)}>
-                      {ticket.priority}
-                    </Badge>
-                    <Badge className={getStatusColor(ticket.status)}>
-                      {ticket.status}
-                    </Badge>
+                     <Badge variant={getPriorityColor(ticket.priority)}>
+                       {ticket.priority}
+                     </Badge>
+                     <Badge variant={getStatusColor(ticket.status)}>
+                       {ticket.status}
+                     </Badge>
                   </div>
                 </div>
               ))}
@@ -476,9 +476,9 @@ const Admin = () => {
                   <TableCell>{order.profiles?.display_name || 'Unknown'}</TableCell>
                   <TableCell>{order.topic}</TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(order.status)}>
-                      {order.status}
-                    </Badge>
+                     <Badge variant={getStatusColor(order.status)}>
+                       {order.status}
+                     </Badge>
                   </TableCell>
                   <TableCell>${order.price?.toFixed(2) || '0.00'}</TableCell>
                   <TableCell>{format(new Date(order.deadline), 'MMM dd, yyyy')}</TableCell>
@@ -532,14 +532,14 @@ const Admin = () => {
                   <TableCell>{ticket.profiles?.display_name || 'Unknown'}</TableCell>
                   <TableCell>{ticket.category}</TableCell>
                   <TableCell>
-                    <Badge className={getPriorityColor(ticket.priority)}>
-                      {ticket.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(ticket.status)}>
-                      {ticket.status}
-                    </Badge>
+                     <Badge variant={getPriorityColor(ticket.priority)}>
+                       {ticket.priority}
+                     </Badge>
+                   </TableCell>
+                   <TableCell>
+                     <Badge variant={getStatusColor(ticket.status)}>
+                       {ticket.status}
+                     </Badge>
                   </TableCell>
                   <TableCell>{format(new Date(ticket.created_at), 'MMM dd, yyyy')}</TableCell>
                   <TableCell>
@@ -663,10 +663,10 @@ const Admin = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Visitors</p>
                   <p className="text-3xl font-bold">24,567</p>
-                  <p className="text-sm text-green-600">+12.3% from last month</p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-blue-600" />
+                   <p className="text-sm text-muted-foreground">+12.3% from last month</p>
+                 </div>
+                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                   <Users className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -678,10 +678,10 @@ const Admin = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Unique Visitors</p>
                   <p className="text-3xl font-bold">18,294</p>
-                  <p className="text-sm text-green-600">+8.7% from last month</p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                  <UserCheck className="h-6 w-6 text-green-600" />
+                   <p className="text-sm text-muted-foreground">+8.7% from last month</p>
+                 </div>
+                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                   <UserCheck className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -693,10 +693,10 @@ const Admin = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Page Views</p>
                   <p className="text-3xl font-bold">89,432</p>
-                  <p className="text-sm text-green-600">+15.2% from last month</p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <Eye className="h-6 w-6 text-purple-600" />
+                   <p className="text-sm text-muted-foreground">+15.2% from last month</p>
+                 </div>
+                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                   <Eye className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -708,10 +708,10 @@ const Admin = () => {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Sessions</p>
                   <p className="text-3xl font-bold">31,205</p>
-                  <p className="text-sm text-red-600">-2.1% from last month</p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-orange-600" />
+                   <p className="text-sm text-muted-foreground">-2.1% from last month</p>
+                 </div>
+                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                   <Clock className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
@@ -728,7 +728,7 @@ const Admin = () => {
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">Avg Session Duration</p>
                 <p className="text-2xl font-bold">3m 24s</p>
-                <p className="text-sm text-green-600">+18.5% increase</p>
+                <p className="text-sm text-muted-foreground">+18.5% increase</p>
               </div>
             </CardContent>
           </Card>
@@ -738,7 +738,7 @@ const Admin = () => {
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">Bounce Rate</p>
                 <p className="text-2xl font-bold">42.3%</p>
-                <p className="text-sm text-red-600">-5.2% improvement</p>
+                <p className="text-sm text-muted-foreground">-5.2% improvement</p>
               </div>
             </CardContent>
           </Card>
@@ -748,7 +748,7 @@ const Admin = () => {
               <div className="text-center">
                 <p className="text-sm font-medium text-muted-foreground">Pages per Session</p>
                 <p className="text-2xl font-bold">2.87</p>
-                <p className="text-sm text-green-600">+0.23 increase</p>
+                <p className="text-sm text-muted-foreground">+0.23 increase</p>
               </div>
             </CardContent>
           </Card>
@@ -789,7 +789,7 @@ const Admin = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                  <div className="h-3 w-3 rounded-full bg-primary"></div>
                   <span className="font-medium">Direct Traffic</span>
                 </div>
                 <div className="text-right">
@@ -800,40 +800,40 @@ const Admin = () => {
               
               <div className="flex items-center justify-between p-3 rounded-lg border">
                 <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                  <span className="font-medium">Organic Search</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold">6,789</p>
-                  <p className="text-sm text-muted-foreground">27.6%</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 rounded-lg border">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 rounded-full bg-purple-500"></div>
-                  <span className="font-medium">Social Media</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold">4,123</p>
-                  <p className="text-sm text-muted-foreground">16.8%</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 rounded-lg border">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 rounded-full bg-orange-500"></div>
-                  <span className="font-medium">Referrals</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold">3,234</p>
-                  <p className="text-sm text-muted-foreground">13.2%</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 rounded-lg border">
-                <div className="flex items-center space-x-3">
-                  <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                   <div className="h-3 w-3 rounded-full bg-secondary"></div>
+                   <span className="font-medium">Organic Search</span>
+                 </div>
+                 <div className="text-right">
+                   <p className="font-bold">6,789</p>
+                   <p className="text-sm text-muted-foreground">27.6%</p>
+                 </div>
+               </div>
+               
+               <div className="flex items-center justify-between p-3 rounded-lg border">
+                 <div className="flex items-center space-x-3">
+                   <div className="h-3 w-3 rounded-full bg-accent"></div>
+                   <span className="font-medium">Social Media</span>
+                 </div>
+                 <div className="text-right">
+                   <p className="font-bold">4,123</p>
+                   <p className="text-sm text-muted-foreground">16.8%</p>
+                 </div>
+               </div>
+               
+               <div className="flex items-center justify-between p-3 rounded-lg border">
+                 <div className="flex items-center space-x-3">
+                   <div className="h-3 w-3 rounded-full bg-muted"></div>
+                   <span className="font-medium">Referrals</span>
+                 </div>
+                 <div className="text-right">
+                   <p className="font-bold">3,234</p>
+                   <p className="text-sm text-muted-foreground">13.2%</p>
+                 </div>
+               </div>
+               
+               <div className="flex items-center justify-between p-3 rounded-lg border">
+                 <div className="flex items-center space-x-3">
+                   <div className="h-3 w-3 rounded-full bg-destructive"></div>
                   <span className="font-medium">Paid Ads</span>
                 </div>
                 <div className="text-right">
