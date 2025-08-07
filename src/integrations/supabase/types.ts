@@ -173,6 +173,60 @@ export type Database = {
         }
         Relationships: []
       }
+      sample_papers: {
+        Row: {
+          academic_level: string
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          is_featured: boolean | null
+          pages: number | null
+          preview_available: boolean | null
+          subject: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          academic_level: string
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          is_featured?: boolean | null
+          pages?: number | null
+          preview_available?: boolean | null
+          subject: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          academic_level?: string
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          is_featured?: boolean | null
+          pages?: number | null
+          preview_available?: boolean | null
+          subject?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           assigned_to: string | null

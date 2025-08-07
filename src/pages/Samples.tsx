@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import SampleModal from "@/components/SampleModal";
+import { supabase } from "@/integrations/supabase/client";
 import { Download, Eye, FileText, Star, GraduationCap, Clock } from "lucide-react";
 
 const Samples = () => {
   const [selectedSample, setSelectedSample] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [samples, setSamples] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const openSampleModal = (sample: any) => {
     setSelectedSample(sample);
@@ -20,68 +23,43 @@ const Samples = () => {
     setSelectedSample(null);
   };
 
-  const samples = [
-    {
-      title: "The Impact of Social Media on Modern Marketing Strategies",
-      type: "Research Paper",
-      level: "Graduate",
-      pages: 15,
-      subject: "Marketing",
-      grade: "A+",
-      excerpt: "This comprehensive research paper examines how social media platforms have revolutionized marketing strategies in the digital age. The study analyzes various case studies from Fortune 500 companies and their social media campaigns, demonstrating the correlation between social media engagement and brand loyalty...",
-      features: ["APA Format", "15 Sources", "Statistical Analysis", "Case Studies"]
-    },
-    {
-      title: "Climate Change Policy: A Comparative Analysis of International Approaches",
-      type: "Essay",
-      level: "Undergraduate",
-      pages: 8,
-      subject: "Environmental Science",
-      grade: "A",
-      excerpt: "This analytical essay explores different international approaches to climate change policy, comparing the strategies employed by developed and developing nations. The paper examines the effectiveness of various policy instruments including carbon pricing, renewable energy incentives...",
-      features: ["MLA Format", "12 Sources", "Comparative Analysis", "Policy Evaluation"]
-    },
-    {
-      title: "Artificial Intelligence in Healthcare: Opportunities and Challenges",
-      type: "Case Study",
-      level: "Graduate",
-      pages: 12,
-      subject: "Computer Science",
-      grade: "A+",
-      excerpt: "This case study investigates the implementation of artificial intelligence technologies in healthcare systems, focusing on diagnostic imaging and patient care optimization. The analysis includes real-world examples from leading medical institutions and examines both the benefits and potential risks...",
-      features: ["IEEE Format", "20 Sources", "Technical Analysis", "Real Case Studies"]
-    },
-    {
-      title: "The Evolution of Democratic Institutions in Post-Colonial Africa",
-      type: "Thesis Chapter",
-      level: "PhD",
-      pages: 25,
-      subject: "Political Science",
-      grade: "Excellent",
-      excerpt: "This thesis chapter provides a comprehensive examination of democratic institution building in post-colonial African states, analyzing the factors that have contributed to both successful democratization and institutional failures. The research draws on extensive fieldwork...",
-      features: ["Chicago Style", "50+ Sources", "Primary Research", "Field Studies"]
-    },
-    {
-      title: "Financial Risk Management in Global Banking",
-      type: "Dissertation Chapter",
-      level: "PhD",
-      pages: 30,
-      subject: "Finance",
-      grade: "Outstanding",
-      excerpt: "This dissertation chapter analyzes contemporary approaches to financial risk management in the global banking sector, with particular emphasis on the lessons learned from the 2008 financial crisis. The study employs quantitative analysis to evaluate risk assessment models...",
-      features: ["Harvard Style", "80+ Sources", "Quantitative Analysis", "Economic Models"]
-    },
-    {
-      title: "Sustainable Urban Development: Smart City Initiatives",
-      type: "Research Paper",
-      level: "Graduate",
-      pages: 18,
-      subject: "Urban Planning",
-      grade: "A",
-      excerpt: "This research paper examines sustainable urban development through the lens of smart city initiatives, analyzing how technology integration can address environmental challenges while improving quality of life for urban residents. The study includes case studies from Barcelona, Singapore...",
-      features: ["APA Format", "25 Sources", "Urban Case Studies", "Sustainability Metrics"]
+  useEffect(() => {
+    fetchSamples();
+  }, []);
+
+  const fetchSamples = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('sample_papers')
+        .select('*')
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform data to match existing format
+      const transformedSamples = data?.map(paper => ({
+        title: paper.title,
+        type: paper.category,
+        level: paper.academic_level,
+        pages: paper.pages,
+        subject: paper.subject,
+        grade: paper.is_featured ? "A+" : "A",
+        excerpt: paper.description || "High-quality academic paper demonstrating excellence in research and writing.",
+        features: ["Academic Format", "Cited Sources", "Original Content", "Professional Writing"],
+        file_url: paper.file_url,
+        preview_available: paper.preview_available
+      })) || [];
+
+      setSamples(transformedSamples);
+    } catch (error) {
+      console.error('Error fetching samples:', error);
+      // Fallback to mock data on error
+      setSamples([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const subjects = [
     "Business & Management",
@@ -155,6 +133,18 @@ const Samples = () => {
             </p>
           </div>
 
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading sample papers...</p>
+            </div>
+          ) : samples.length === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-xl text-muted-foreground">No sample papers available yet.</p>
+              <p className="text-muted-foreground">Check back soon for new samples!</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {samples.map((sample, index) => (
               <Card key={index} className="border-border hover:border-accent transition-all duration-300 hover:shadow-xl">
@@ -211,7 +201,8 @@ const Samples = () => {
               </Card>
             ))}
           </div>
-        </div>
+          </div>
+          )}
       </section>
 
       {/* Subjects We Cover */}

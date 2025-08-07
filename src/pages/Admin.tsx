@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { SamplePapersManager } from "@/components/admin/SamplePapersManager";
 import { 
   Users, 
   ShoppingCart, 
@@ -127,6 +128,7 @@ const Admin = () => {
     { id: "orders", label: "Orders", icon: ShoppingCart },
     { id: "users", label: "Users", icon: Users },
     { id: "support", label: "Support Tickets", icon: Headphones },
+    { id: "samples", label: "Sample Papers", icon: FileText },
     { id: "finances", label: "Finances", icon: DollarSign },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "marketing", label: "Marketing", icon: Target },
@@ -1658,6 +1660,8 @@ const Admin = () => {
         return renderDashboard();
       case "orders":
         return renderOrders();
+      case "samples":
+        return <SamplePapersManager />;
       case "support":
         return renderSupportTickets();
       case "users":
