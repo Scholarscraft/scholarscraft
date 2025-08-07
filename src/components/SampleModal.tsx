@@ -14,6 +14,8 @@ interface Sample {
   grade: string;
   excerpt: string;
   features: string[];
+  file_url?: string;
+  preview_available?: boolean;
 }
 
 interface SampleModalProps {
@@ -119,7 +121,16 @@ This sample demonstrates our commitment to academic excellence and our ability t
                   Order Similar Paper
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full" disabled>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                disabled={!sample.file_url}
+                onClick={() => {
+                  if (sample.file_url) {
+                    window.open(sample.file_url, '_blank');
+                  }
+                }}
+              >
                 <Download className="h-4 w-4 mr-2" />
                 Download Sample
               </Button>
@@ -129,15 +140,28 @@ This sample demonstrates our commitment to academic excellence and our ability t
           {/* Content */}
           <div className="lg:col-span-2">
             <ScrollArea className="h-[60vh] pr-4">
-              <div className="prose prose-sm max-w-none dark:prose-invert">
-                <div className="text-muted-foreground text-sm mb-4 p-3 bg-muted/50 rounded-lg border-l-4 border-primary">
-                  <strong>Note:</strong> This is a preview of the academic work. The full document contains additional research, analysis, and properly formatted citations.
+              {sample.file_url && sample.file_url.endsWith('.pdf') ? (
+                <div className="w-full h-full">
+                  <div className="text-muted-foreground text-sm mb-4 p-3 bg-muted/50 rounded-lg border-l-4 border-primary">
+                    <strong>Document Preview:</strong> This is a preview of the actual sample paper. Download the full document for the complete content.
+                  </div>
+                  <iframe
+                    src={`${sample.file_url}#view=FitH`}
+                    className="w-full h-[50vh] border border-border rounded-lg"
+                    title="Sample Paper Preview"
+                  />
                 </div>
-                
-                <div className="whitespace-pre-line text-sm leading-relaxed">
-                  {fullContent}
+              ) : (
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <div className="text-muted-foreground text-sm mb-4 p-3 bg-muted/50 rounded-lg border-l-4 border-primary">
+                    <strong>Note:</strong> This is a preview of the academic work. The full document contains additional research, analysis, and properly formatted citations.
+                  </div>
+                  
+                  <div className="whitespace-pre-line text-sm leading-relaxed">
+                    {fullContent}
+                  </div>
                 </div>
-              </div>
+              )}
             </ScrollArea>
           </div>
         </div>
