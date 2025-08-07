@@ -7,7 +7,7 @@ const WhatsAppButton = () => {
   const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
+    <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3">
       {/* WhatsApp Us Text */}
       <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-lg border">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
