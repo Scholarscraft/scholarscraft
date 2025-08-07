@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { supabase } from "@/integrations/supabase/client";
 import { Menu, X, GraduationCap, MessageCircle, User, LogOut, Settings } from "lucide-react";
 import {
   DropdownMenu,
@@ -16,9 +17,65 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileData, setProfileData] = useState<{avatar_url?: string; display_name?: string} | null>(null);
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+
+  // Fetch profile data when user changes
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) {
+        setProfileData(null);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url, display_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching profile:', error);
+          return;
+        }
+
+        setProfileData(data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
+
+  // Real-time subscription to profile changes
+  useEffect(() => {
+    if (!user) return;
+
+    const subscription = supabase
+      .channel('profile-changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'profiles',
+          filter: `user_id=eq.${user.id}`
+        }, 
+        (payload) => {
+          if (payload.new) {
+            setProfileData(payload.new as any);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -80,9 +137,9 @@ const Navigation = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="h-8 w-8 cursor-pointer">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarImage src={profileData?.avatar_url} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user.email?.charAt(0).toUpperCase() || 'U'}
+                      {profileData?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -152,9 +209,9 @@ const Navigation = () => {
                   <div className="space-y-2">
                     <div className="flex justify-center mb-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.user_metadata?.avatar_url} />
+                        <AvatarImage src={profileData?.avatar_url} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                          {user.email?.charAt(0).toUpperCase() || 'U'}
+                          {profileData?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                     </div>
