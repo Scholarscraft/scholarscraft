@@ -99,7 +99,8 @@ const sidebarItems = [
 ];
 
 export function AdminSidebar({ activeTab, onTabChange }: AdminSidebarProps) {
-  const { collapsed } = useSidebar();
+  const sidebar = useSidebar();
+  const collapsed = sidebar.state === "collapsed";
 
   return (
     <Sidebar className="border-r border-border">

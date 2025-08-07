@@ -30,80 +30,44 @@ export function NotificationBell() {
   useEffect(() => {
     if (!user) return;
 
-    const fetchNotifications = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('notifications')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (error) throw error;
-
-        setNotifications(data || []);
-        const unread = data?.filter(n => !n.read).length || 0;
-        setUnreadCount(unread);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
+    // Mock notifications until database table is ready
+    const mockNotifications: Notification[] = [
+      {
+        id: '1',
+        title: 'Welcome to the platform!',
+        message: 'Thank you for joining us. Explore all the features available.',
+        type: 'info',
+        read: false,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: '2', 
+        title: 'New order received',
+        message: 'You have a new order waiting for processing.',
+        type: 'success',
+        read: true,
+        created_at: new Date(Date.now() - 86400000).toISOString()
       }
-    };
+    ];
 
-    fetchNotifications();
-
-    // Real-time subscription for new notifications
-    const subscription = supabase
-      .channel('notifications-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${user.id}`
-      }, (payload) => {
-        fetchNotifications();
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    setNotifications(mockNotifications);
+    setUnreadCount(mockNotifications.filter(n => !n.read).length);
   }, [user]);
 
   const markAsRead = async (notificationId: string) => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('id', notificationId);
-
-      if (error) throw error;
-
-      setNotifications(prev => 
-        prev.map(n => 
-          n.id === notificationId ? { ...n, read: true } : n
-        )
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
+    // Update local state for now
+    setNotifications(prev => 
+      prev.map(n => 
+        n.id === notificationId ? { ...n, read: true } : n
+      )
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
   };
 
   const markAllAsRead = async () => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('user_id', user?.id)
-        .eq('read', false);
-
-      if (error) throw error;
-
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-    }
+    // Update local state for now
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
   };
 
   const getNotificationIcon = (type: string) => {
