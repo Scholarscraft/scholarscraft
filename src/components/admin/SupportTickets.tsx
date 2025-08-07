@@ -25,7 +25,8 @@ interface SupportTicket {
   profiles?: {
     display_name: string;
     avatar_url: string;
-  };
+    user_id: string;
+  } | null;
 }
 
 export function SupportTickets() {
@@ -44,12 +45,25 @@ export function SupportTickets() {
       // Fetch support tickets from Supabase
       const { data: ticketsData, error: ticketsError } = await supabase
         .from('support_tickets')
-        .select('*, profiles(display_name, avatar_url)')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (ticketsError) throw ticketsError;
 
-      setTickets(ticketsData || []);
+      // Fetch profiles separately to avoid join issues
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url');
+
+      if (profilesError) throw profilesError;
+
+      // Manually join the data
+      const ticketsWithProfiles = ticketsData?.map(ticket => ({
+        ...ticket,
+        profiles: profilesData?.find(profile => profile.user_id === ticket.user_id) || null
+      })) || [];
+
+      setTickets(ticketsWithProfiles);
     } catch (error) {
       console.error('Error fetching support tickets:', error);
       toast({
