@@ -180,10 +180,12 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Offers Banner */}
-        <div className="mb-8 bg-gradient-to-r from-accent to-accent-light rounded-lg p-6 text-accent-foreground">
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Special Offer!</h3>
-            <p className="text-sm opacity-90">Order assignments for the whole course at once, save up 25%, and enjoy your free time.</p>
+        <div className="mb-8 bg-gradient-to-r from-primary to-primary-light rounded-xl p-8 text-primary-foreground shadow-lg border border-primary/20 animate-fade-in hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+          <div className="text-center">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 animate-scale-in">🎯 Special Course Offer!</h3>
+            <p className="text-lg md:text-xl opacity-95 leading-relaxed animate-bounce-gentle">
+              Order assignments for the whole course at once, save up <span className="font-bold text-accent-light">25%</span>, and enjoy your free time.
+            </p>
           </div>
         </div>
         
