@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          academic_level: string
+          created_at: string
+          deadline: string
+          id: string
+          instructions: string | null
+          order_id: string
+          pages: number
+          price: number | null
+          service: string
+          status: string
+          subject: string
+          topic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          academic_level: string
+          created_at?: string
+          deadline: string
+          id?: string
+          instructions?: string | null
+          order_id: string
+          pages: number
+          price?: number | null
+          service: string
+          status?: string
+          subject: string
+          topic: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          academic_level?: string
+          created_at?: string
+          deadline?: string
+          id?: string
+          instructions?: string | null
+          order_id?: string
+          pages?: number
+          price?: number | null
+          service?: string
+          status?: string
+          subject?: string
+          topic?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       quote_requests: {
         Row: {
           academic_level: string
@@ -67,7 +148,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_order_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

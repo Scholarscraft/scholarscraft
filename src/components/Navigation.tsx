@@ -70,25 +70,27 @@ const Navigation = () => {
             <ThemeToggle />
             {user ? (
               <div className="flex items-center space-x-3">
-                <span className="text-sm text-muted-foreground">
-                  Welcome, {user.email}
-                </span>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
                 <Button variant="outline" size="sm" onClick={handleSignOut}>
                   <LogOut className="h-4 w-4" />
                   Sign Out
                 </Button>
               </div>
             ) : (
-              <Button variant="premium" size="sm" asChild>
-                <Link to="/auth">
-                  <User className="h-4 w-4" />
-                  Sign In
-                </Link>
-              </Button>
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/auth">
+                    <User className="h-4 w-4" />
+                    Sign In
+                  </Link>
+                </Button>
+                <Button variant="premium" size="sm" asChild>
+                  <Link to="/contact">Get Quote</Link>
+                </Button>
+              </div>
             )}
-            <Button variant="premium" size="sm" asChild>
-              <Link to="/contact">Get Quote</Link>
-            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -125,21 +127,28 @@ const Navigation = () => {
                   <ThemeToggle />
                 </div>
                 {user ? (
-                  <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
-                  </Button>
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm" className="w-full" asChild>
+                      <Link to="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
                 ) : (
-                  <Button variant="premium" size="sm" className="w-full" asChild>
-                    <Link to="/auth">
-                      <User className="h-4 w-4" />
-                      Sign In
-                    </Link>
-                  </Button>
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm" className="w-full" asChild>
+                      <Link to="/auth">
+                        <User className="h-4 w-4" />
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button variant="premium" size="sm" className="w-full" asChild>
+                      <Link to="/contact">Get Quote</Link>
+                    </Button>
+                  </div>
                 )}
-                <Button variant="premium" size="sm" className="w-full" asChild>
-                  <Link to="/contact">Get Quote</Link>
-                </Button>
               </div>
             </div>
           </div>
