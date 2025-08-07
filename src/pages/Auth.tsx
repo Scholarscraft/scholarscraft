@@ -129,6 +129,18 @@ const Auth = () => {
       if (resetError) {
         setError(resetError.message);
       } else {
+        // Send custom styled email via our edge function
+        const { error: emailError } = await supabase.functions.invoke('send-password-reset', {
+          body: {
+            email: resetEmail,
+            resetLink: redirectUrl,
+          },
+        });
+
+        if (emailError) {
+          console.warn("Custom email failed, but default email should still work:", emailError);
+        }
+
         toast({
           title: "Password reset email sent",
           description: "Please check your email for password reset instructions.",

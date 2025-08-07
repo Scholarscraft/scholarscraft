@@ -1,1 +1,7 @@
 project_id = "giuewshketieoddytowc"
+
+[functions.submit-quote]
+verify_jwt = false
+
+[functions.send-password-reset]
+verify_jwt = false
