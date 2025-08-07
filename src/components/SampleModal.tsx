@@ -9,12 +9,15 @@ import PDFViewer from "@/components/PDFViewer";
 interface Sample {
   id?: string;
   title: string;
+  category?: string;
+  academic_level?: string;
   type: string;
   level: string;
   pages: number;
   subject: string;
   grade: string;
-  excerpt: string;
+  description?: string;
+  excerpt?: string;
   features: string[];
   file_url?: string;
   preview_available?: boolean;
@@ -29,34 +32,17 @@ interface SampleModalProps {
 const SampleModal = ({ sample, isOpen, onClose }: SampleModalProps) => {
   if (!sample) return null;
 
-  const fullContent = `${sample.excerpt}
+  // Use actual description from database, with minimal fallback
+  const fullContent = sample.description || sample.excerpt || `This ${sample.level} level ${sample.subject} paper provides comprehensive academic analysis and research.
 
-This comprehensive academic work demonstrates the highest standards of scholarly writing and research methodology. The paper follows proper academic formatting guidelines and includes extensive citation of relevant sources.
+The work demonstrates excellence in scholarly writing through:
+- Rigorous research methodology
+- Professional academic formatting
+- Original analysis and insights  
+- Proper citation and referencing
+- Quality assurance standards
 
-Key Research Findings:
-
-1. Comprehensive Literature Review
-The research begins with an extensive review of current literature in the field, synthesizing key findings from leading scholars and identifying gaps in existing knowledge. This foundation provides the necessary context for the original research presented.
-
-2. Methodological Approach
-The study employs rigorous research methodologies appropriate for the academic level and subject matter. Quantitative and qualitative data collection methods are used where applicable, with careful attention to validity and reliability.
-
-3. Original Analysis
-The paper presents original analysis and insights that contribute meaningfully to the academic discourse in the field. Arguments are well-structured, evidence-based, and demonstrate critical thinking skills.
-
-4. Professional Formatting
-All citations and references follow the specified academic style guide (${sample.features.find(f => f.includes('Format')) || 'Standard Academic Format'}). The paper maintains consistent formatting throughout and includes all required sections.
-
-5. Quality Assurance
-This work has undergone rigorous quality assurance processes, including:
-- Thorough research and fact-checking
-- Multiple rounds of editing and proofreading
-- Plagiarism detection and originality verification
-- Academic standard compliance review
-
-The final result is a piece of academic writing that meets the highest standards of scholarly work and serves as an excellent example of quality academic writing at the ${sample.level} level.
-
-This sample demonstrates our commitment to academic excellence and our ability to produce work that consistently achieves top grades while maintaining the highest standards of academic integrity.`;
+This sample represents the high-quality academic work that consistently achieves excellent grades while maintaining academic integrity standards appropriate for ${sample.level} level studies.`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

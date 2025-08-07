@@ -91,38 +91,19 @@ const SampleDetail = () => {
 
   const wordCount = sample.pages ? sample.pages * 250 : 795; // Estimate 250 words per page
 
-  const fullContent = `${sample.description || 'This comprehensive academic work demonstrates the highest standards of scholarly writing and research methodology.'}
+  // Use actual description from database, with minimal fallback
+  const fullContent = sample.description || `This ${sample.academic_level} level ${sample.subject} paper provides comprehensive analysis and research on ${sample.title.toLowerCase()}. 
 
-This academic paper showcases excellence in research, analysis, and presentation. The work follows rigorous academic standards and demonstrates deep understanding of the subject matter.
+The work demonstrates academic excellence through rigorous methodology, thorough research, and professional presentation standards appropriate for ${sample.academic_level} level studies.
 
-Key Research Findings:
+Key aspects covered in this academic work:
+- Detailed analysis of the subject matter
+- Comprehensive literature review and source integration
+- Proper academic formatting and citation standards
+- Original insights and critical thinking
+- Professional presentation and structure
 
-1. Comprehensive Literature Review
-The research begins with an extensive review of current literature in the field, synthesizing key findings from leading scholars and identifying gaps in existing knowledge. This foundation provides the necessary context for the original research presented.
-
-2. Methodological Approach
-The study employs rigorous research methodologies appropriate for the academic level and subject matter. Quantitative and qualitative data collection methods are used where applicable, with careful attention to validity and reliability.
-
-3. Original Analysis
-The paper presents original analysis and insights that contribute meaningfully to the academic discourse in the field. Arguments are well-structured, evidence-based, and demonstrate critical thinking skills.
-
-4. Professional Formatting
-All citations and references follow the specified academic style guide. The paper maintains consistent formatting throughout and includes all required sections such as abstract, introduction, literature review, methodology, findings, discussion, and conclusion.
-
-5. Quality Assurance
-This work has undergone rigorous quality assurance processes, including:
-- Thorough research and fact-checking
-- Multiple rounds of editing and proofreading  
-- Plagiarism detection and originality verification
-- Academic standard compliance review
-
-The research methodology employed in this study ensures reliability and validity of findings. Primary and secondary sources have been carefully selected and analyzed to provide comprehensive insights into the topic.
-
-The analysis reveals significant patterns and trends that contribute to our understanding of the subject matter. These findings have important implications for both theoretical understanding and practical applications in the field.
-
-The paper concludes with recommendations for future research and practical applications of the findings. The work demonstrates mastery of academic writing conventions and provides valuable contributions to the scholarly discourse.
-
-This sample represents the high-quality academic work that consistently achieves top grades while maintaining the highest standards of academic integrity and scholarly excellence.`;
+This sample represents quality academic writing that meets institutional standards and demonstrates the level of work expected at the ${sample.academic_level} level.`;
 
   return (
     <div className="min-h-screen bg-secondary/30 py-8">
