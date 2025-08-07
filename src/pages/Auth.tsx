@@ -19,6 +19,9 @@ const Auth = () => {
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  const [otpEmail, setOtpEmail] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -101,13 +104,10 @@ const Auth = () => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/auth`;
-      
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             display_name: displayName,
           },
@@ -121,9 +121,11 @@ const Auth = () => {
           setError(signUpError.message);
         }
       } else {
+        setOtpEmail(email);
+        setShowOtpVerification(true);
         toast({
-          title: "Account created successfully!",
-          description: "Please check your email and click the confirmation link to verify your account.",
+          title: "Verification code sent!",
+          description: "Please check your email for the 6-digit verification code.",
         });
       }
     } catch (err) {
@@ -242,6 +244,89 @@ const Auth = () => {
         // Clear the URL hash and redirect to home
         window.history.replaceState(null, '', '/auth');
         navigate("/");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single digits
+    
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
+    }
+  };
+
+  const handleOtpVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    const otpCode = otp.join("");
+    
+    if (otpCode.length !== 6) {
+      setError("Please enter all 6 digits of the verification code.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email: otpEmail,
+        token: otpCode,
+        type: 'signup',
+      });
+
+      if (verifyError) {
+        setError("Invalid verification code. Please check your email and try again.");
+      } else {
+        toast({
+          title: "Email verified successfully!",
+          description: "Welcome to ScholarsCraft! You can now access all features.",
+        });
+        navigate("/");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError("");
+    setIsLoading(true);
+    
+    try {
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: otpEmail,
+      });
+
+      if (resendError) {
+        setError(resendError.message);
+      } else {
+        setOtp(["", "", "", "", "", ""]);
+        toast({
+          title: "Verification code resent!",
+          description: "Please check your email for the new 6-digit verification code.",
+        });
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -405,6 +490,110 @@ const Auth = () => {
                     onClick={() => setShowForgotPassword(false)}
                   >
                     Back to Sign In
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div className="text-center mt-6">
+            <Link 
+              to="/" 
+              className="text-sm text-muted-foreground hover:text-accent transition-colors"
+            >
+              ← Back to home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showOtpVerification) {
+    return (
+      <div className="min-h-screen pt-16 bg-gradient-to-br from-secondary/30 to-primary/5 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Logo and Header */}
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center space-x-3 mb-4">
+              <div className="bg-gradient-to-r from-primary to-primary-light p-3 rounded-lg">
+                <GraduationCap className="h-8 w-8 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">ScholarsCraft</h1>
+                <p className="text-sm text-muted-foreground">Academic Writing Services</p>
+              </div>
+            </Link>
+          </div>
+
+          <Card className="border-border shadow-elegant">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Verify Your Email</CardTitle>
+              <CardDescription>
+                We've sent a 6-digit verification code to<br />
+                <span className="font-medium text-foreground">{otpEmail}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleOtpVerification} className="space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-center block">Enter verification code</Label>
+                  <div className="flex justify-center space-x-2">
+                    {otp.map((digit, index) => (
+                      <Input
+                        key={index}
+                        id={`otp-${index}`}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(index, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                        className="w-12 h-12 text-center text-lg font-semibold"
+                        autoComplete="off"
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Verifying..." : "Verify Email"}
+                  </Button>
+                  
+                  <div className="text-center">
+                    <span className="text-sm text-muted-foreground">
+                      Didn't receive the code?{" "}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={isLoading}
+                      className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                    >
+                      Resend code
+                    </button>
+                  </div>
+                  
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    className="w-full"
+                    onClick={() => {
+                      setShowOtpVerification(false);
+                      setOtp(["", "", "", "", "", ""]);
+                      setOtpEmail("");
+                      setError("");
+                    }}
+                  >
+                    Back to Sign Up
                   </Button>
                 </div>
               </form>
