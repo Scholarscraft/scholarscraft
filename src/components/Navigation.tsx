@@ -150,6 +150,12 @@ const Navigation = () => {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="flex items-center">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -219,6 +225,12 @@ const Navigation = () => {
                       <Link to="/dashboard">
                         <User className="h-4 w-4" />
                         Dashboard
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full" asChild>
+                      <Link to="/admin">
+                        <Settings className="h-4 w-4" />
+                        Admin Panel
                       </Link>
                     </Button>
                     <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
