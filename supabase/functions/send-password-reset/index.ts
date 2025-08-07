@@ -23,9 +23,9 @@ const handler = async (req: Request): Promise<Response> => {
     const { email, resetLink }: PasswordResetRequest = await req.json();
 
     const emailResponse = await resend.emails.send({
-      from: "Global Testing Solutions <admin@gmail.com>",
+      from: "ScholarsCraft <noreply@resend.dev>",
       to: [email],
-      subject: "Reset Your Password - Global Testing Solutions",
+      subject: "Reset Your Password - ScholarsCraft",
       html: `
         <!DOCTYPE html>
         <html>
@@ -42,13 +42,13 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="padding: 40px;">
                       <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #2563eb; margin: 0; font-size: 28px; font-weight: bold;">Global Testing Solutions</h1>
+                        <h1 style="color: #2563eb; margin: 0; font-size: 28px; font-weight: bold;">ScholarsCraft</h1>
                       </div>
                       
                       <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px; text-align: center;">Reset Your Password</h2>
                       
                       <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-                        You recently requested to reset your password for your Global Testing Solutions account. Click the button below to reset it.
+                        You recently requested to reset your password for your ScholarsCraft account. Click the button below to reset it.
                       </p>
                       
                       <div style="text-align: center; margin: 30px 0;">
@@ -69,10 +69,10 @@ const handler = async (req: Request): Promise<Response> => {
                       <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
                       
                       <div style="text-align: center;">
-                        <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                          Global Testing Solutions<br>
-                          Professional Testing & Quality Assurance Services
-                        </p>
+                         <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                           ScholarsCraft<br>
+                           Academic Writing Services
+                         </p>
                       </div>
                     </td>
                   </tr>
