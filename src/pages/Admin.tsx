@@ -719,11 +719,47 @@ const Admin = () => {
         </div>
       </div>
 
+      {/* User Engagement Metrics */}
+      <div>
+        <h3 className="text-xl font-bold mb-4">User Engagement</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-sm font-medium text-muted-foreground">Avg Session Duration</p>
+                <p className="text-2xl font-bold">3m 24s</p>
+                <p className="text-sm text-green-600">+18.5% increase</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-sm font-medium text-muted-foreground">Bounce Rate</p>
+                <p className="text-2xl font-bold">42.3%</p>
+                <p className="text-sm text-red-600">-5.2% improvement</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-sm font-medium text-muted-foreground">Pages per Session</p>
+                <p className="text-2xl font-bold">2.87</p>
+                <p className="text-sm text-green-600">+0.23 increase</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Traffic Overview Chart */}
       <Card>
         <CardHeader>
           <CardTitle>Traffic Overview</CardTitle>
-          <CardDescription>Daily visitors over the last 30 days</CardDescription>
+          <CardDescription>Daily visitors and page views over the last 30 days</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -733,8 +769,8 @@ const Admin = () => {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="visitors" stroke="hsl(var(--primary))" strokeWidth={2} />
-                <Line type="monotone" dataKey="pageViews" stroke="hsl(var(--accent))" strokeWidth={2} />
+                <Line type="monotone" dataKey="visitors" stroke="hsl(var(--primary))" strokeWidth={2} name="Visitors" />
+                <Line type="monotone" dataKey="pageViews" stroke="hsl(var(--accent))" strokeWidth={2} name="Page Views" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -886,6 +922,725 @@ const Admin = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Content Performance */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Performing Pages</CardTitle>
+            <CardDescription>Most visited pages on your site</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">/services</span>
+                <div className="text-right">
+                  <span className="font-bold">12,543</span>
+                  <span className="text-sm text-muted-foreground ml-2">views</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">/pricing</span>
+                <div className="text-right">
+                  <span className="font-bold">8,932</span>
+                  <span className="text-sm text-muted-foreground ml-2">views</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">/samples</span>
+                <div className="text-right">
+                  <span className="font-bold">6,721</span>
+                  <span className="text-sm text-muted-foreground ml-2">views</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">/contact</span>
+                <div className="text-right">
+                  <span className="font-bold">4,456</span>
+                  <span className="text-sm text-muted-foreground ml-2">views</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">/testimonials</span>
+                <div className="text-right">
+                  <span className="font-bold">3,289</span>
+                  <span className="text-sm text-muted-foreground ml-2">views</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Conversion Tracking</CardTitle>
+            <CardDescription>Key performance indicators</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 dark:bg-green-950">
+                <span className="font-medium">Quote Requests</span>
+                <div className="text-right">
+                  <span className="font-bold text-green-600">2.4%</span>
+                  <span className="text-sm text-muted-foreground ml-2">conv rate</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-blue-50 dark:bg-blue-950">
+                <span className="font-medium">Newsletter Signups</span>
+                <div className="text-right">
+                  <span className="font-bold text-blue-600">5.7%</span>
+                  <span className="text-sm text-muted-foreground ml-2">conv rate</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-purple-50 dark:bg-purple-950">
+                <span className="font-medium">Order Completions</span>
+                <div className="text-right">
+                  <span className="font-bold text-purple-600">1.8%</span>
+                  <span className="text-sm text-muted-foreground ml-2">conv rate</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50 dark:bg-orange-950">
+                <span className="font-medium">Support Contacts</span>
+                <div className="text-right">
+                  <span className="font-bold text-orange-600">0.9%</span>
+                  <span className="text-sm text-muted-foreground ml-2">conv rate</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Real-time Reporting */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Real-Time Activity</CardTitle>
+          <CardDescription>Current visitor activity on your site</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600">127</div>
+              <div className="text-sm text-muted-foreground">Active Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600">43</div>
+              <div className="text-sm text-muted-foreground">Page Views (last hour)</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600">/services</div>
+              <div className="text-sm text-muted-foreground">Top Active Page</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-orange-600">2m 15s</div>
+              <div className="text-sm text-muted-foreground">Avg Session Time</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderFinances = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Financial Management</h2>
+      
+      {/* Dashboard Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Earnings</p>
+                <p className="text-2xl font-bold">$45,230.00</p>
+                <p className="text-sm text-green-600">+18.2% this month</p>
+              </div>
+              <DollarSign className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Pending Payments</p>
+                <p className="text-2xl font-bold">$8,950.00</p>
+                <p className="text-sm text-orange-600">12 transactions</p>
+              </div>
+              <Clock className="h-8 w-8 text-orange-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Withdrawn Balance</p>
+                <p className="text-2xl font-bold">$2,340.00</p>
+                <p className="text-sm text-blue-600">Available to withdraw</p>
+              </div>
+              <Download className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Commission Tracking</p>
+                <p className="text-2xl font-bold">15.5%</p>
+                <p className="text-sm text-purple-600">Average commission</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-purple-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Payment Methods */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment Methods</CardTitle>
+          <CardDescription>Connect and manage your payment providers</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button variant="outline" className="h-16 flex flex-col gap-2">
+              <span className="font-semibold">Stripe</span>
+              <span className="text-xs text-muted-foreground">Connected</span>
+            </Button>
+            <Button variant="outline" className="h-16 flex flex-col gap-2">
+              <span className="font-semibold">PayPal</span>
+              <span className="text-xs text-muted-foreground">Not Connected</span>
+            </Button>
+            <Button variant="outline" className="h-16 flex flex-col gap-2">
+              <span className="font-semibold">Payoneer</span>
+              <span className="text-xs text-muted-foreground">Not Connected</span>
+            </Button>
+            <Button variant="outline" className="h-16 flex flex-col gap-2">
+              <span className="font-semibold">Flutterwave</span>
+              <span className="text-xs text-muted-foreground">Not Connected</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Transactions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Transactions</CardTitle>
+          <CardDescription>Latest payment activity</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Dec 15, 2024</TableCell>
+                <TableCell>Order Payment</TableCell>
+                <TableCell>$450.00</TableCell>
+                <TableCell><Badge className="bg-green-500">Completed</Badge></TableCell>
+                <TableCell><Button variant="outline" size="sm">View</Button></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Dec 14, 2024</TableCell>
+                <TableCell>Withdrawal</TableCell>
+                <TableCell>-$200.00</TableCell>
+                <TableCell><Badge className="bg-blue-500">Processing</Badge></TableCell>
+                <TableCell><Button variant="outline" size="sm">View</Button></TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderMarketing = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Marketing Dashboard</h2>
+      
+      {/* Campaign Performance */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Google Ads</CardTitle>
+            <CardDescription>Campaign performance</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Impressions</span>
+                <span className="font-bold">45,230</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Clicks</span>
+                <span className="font-bold">1,234</span>
+              </div>
+              <div className="flex justify-between">
+                <span>CTR</span>
+                <span className="font-bold">2.73%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Cost</span>
+                <span className="font-bold">$567.89</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Meta Ads</CardTitle>
+            <CardDescription>Facebook & Instagram insights</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Reach</span>
+                <span className="font-bold">23,456</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Engagement</span>
+                <span className="font-bold">892</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Engagement Rate</span>
+                <span className="font-bold">3.8%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Spend</span>
+                <span className="font-bold">$234.56</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Email Marketing</CardTitle>
+            <CardDescription>Mailchimp/Brevo performance</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Subscribers</span>
+                <span className="font-bold">1,456</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Open Rate</span>
+                <span className="font-bold">24.3%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Click Rate</span>
+                <span className="font-bold">4.2%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Unsubscribe Rate</span>
+                <span className="font-bold">0.8%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>Manage your marketing activities</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <Target className="h-6 w-6" />
+              <span>Create Campaign</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <Mail className="h-6 w-6" />
+              <span>Newsletter</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <Bell className="h-6 w-6" />
+              <span>Push Notifications</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex flex-col gap-2">
+              <BarChart3 className="h-6 w-6" />
+              <span>Analytics</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderFiles = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">File Management</h2>
+      
+      {/* Upload Area */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Upload Files</CardTitle>
+          <CardDescription>Upload documents, drafts, and reports</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+            <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p className="text-lg font-medium mb-2">Drop files here or click to upload</p>
+            <p className="text-sm text-muted-foreground mb-4">Support for PDF, DOC, DOCX, TXT files up to 10MB</p>
+            <Button>
+              <Upload className="h-4 w-4 mr-2" />
+              Choose Files
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* File Categories */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Order Files</CardTitle>
+            <CardDescription>Client requirements and submissions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-2 rounded border">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">SCH-001234-requirements.pdf</span>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded border">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">SCH-001235-submission.docx</span>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Assignment Drafts</CardTitle>
+            <CardDescription>Work in progress and drafts</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-2 rounded border">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">draft-essay-psychology.docx</span>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded border">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">draft-research-paper.pdf</span>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Plagiarism Reports</CardTitle>
+            <CardDescription>Quality assurance documents</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between p-2 rounded border">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">plagiarism-report-001.pdf</span>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded border">
+                <div className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">quality-check-002.pdf</span>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderNotifications = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Notification Management</h2>
+      
+      {/* Notification Types */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Client Notifications</CardTitle>
+            <CardDescription>Manage customer communication</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Order Received</p>
+                <p className="text-sm text-muted-foreground">Notify when new order is placed</p>
+              </div>
+              <Button variant="outline" size="sm">Configure</Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Draft Uploaded</p>
+                <p className="text-sm text-muted-foreground">Alert when draft is ready</p>
+              </div>
+              <Button variant="outline" size="sm">Configure</Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Revision Complete</p>
+                <p className="text-sm text-muted-foreground">Notify of completed revisions</p>
+              </div>
+              <Button variant="outline" size="sm">Configure</Button>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Admin Notifications</CardTitle>
+            <CardDescription>Internal system alerts</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">New Order Placed</p>
+                <p className="text-sm text-muted-foreground">Alert admin of new orders</p>
+              </div>
+              <Button variant="outline" size="sm">Configure</Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Payment Received</p>
+                <p className="text-sm text-muted-foreground">Notify of successful payments</p>
+              </div>
+              <Button variant="outline" size="sm">Configure</Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Support Ticket</p>
+                <p className="text-sm text-muted-foreground">Alert for new support requests</p>
+              </div>
+              <Button variant="outline" size="sm">Configure</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Notification Channels */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Channels</CardTitle>
+          <CardDescription>Configure delivery methods</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="p-4 border rounded-lg text-center">
+              <Mail className="h-8 w-8 mx-auto mb-2" />
+              <p className="font-medium">Email</p>
+              <p className="text-sm text-green-600">Active</p>
+            </div>
+            <div className="p-4 border rounded-lg text-center">
+              <MessageSquare className="h-8 w-8 mx-auto mb-2" />
+              <p className="font-medium">WhatsApp</p>
+              <p className="text-sm text-yellow-600">Configure</p>
+            </div>
+            <div className="p-4 border rounded-lg text-center">
+              <Bell className="h-8 w-8 mx-auto mb-2" />
+              <p className="font-medium">SMS</p>
+              <p className="text-sm text-red-600">Inactive</p>
+            </div>
+            <div className="p-4 border rounded-lg text-center">
+              <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+              <p className="font-medium">Push</p>
+              <p className="text-sm text-green-600">Active</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderSettings = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">System Settings</h2>
+      
+      {/* General Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>General Settings</CardTitle>
+          <CardDescription>Site identity and basic configuration</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Site Title</label>
+              <Input placeholder="Your Site Title" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Tagline</label>
+              <Input placeholder="Your site tagline" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Language</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Spanish</SelectItem>
+                  <SelectItem value="fr">French</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Time Zone</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select timezone" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="utc">UTC</SelectItem>
+                  <SelectItem value="est">Eastern Time</SelectItem>
+                  <SelectItem value="pst">Pacific Time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Security Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Security & Privacy</CardTitle>
+          <CardDescription>Access control and data protection</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Two-Factor Authentication</p>
+              <p className="text-sm text-muted-foreground">Add extra security to admin accounts</p>
+            </div>
+            <Button variant="outline">Enable 2FA</Button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">GDPR Compliance</p>
+              <p className="text-sm text-muted-foreground">Cookie consent and data protection</p>
+            </div>
+            <Button variant="outline">Configure</Button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Password Policies</p>
+              <p className="text-sm text-muted-foreground">Set minimum requirements</p>
+            </div>
+            <Button variant="outline">Manage</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Payment Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment & Currency</CardTitle>
+          <CardDescription>Configure payment methods and pricing</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Default Currency</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="usd">USD ($)</SelectItem>
+                  <SelectItem value="eur">EUR (€)</SelectItem>
+                  <SelectItem value="gbp">GBP (£)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Tax Rate (%)</label>
+              <Input placeholder="0.00" type="number" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Backup & Maintenance */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Backup & Maintenance</CardTitle>
+          <CardDescription>Data protection and system maintenance</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Automatic Backups</p>
+              <p className="text-sm text-muted-foreground">Schedule regular data backups</p>
+            </div>
+            <Button variant="outline">Configure</Button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Maintenance Mode</p>
+              <p className="text-sm text-muted-foreground">Temporarily disable site access</p>
+            </div>
+            <Button variant="outline">Toggle</Button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">System Logs</p>
+              <p className="text-sm text-muted-foreground">View and download system logs</p>
+            </div>
+            <Button variant="outline">View Logs</Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
@@ -903,6 +1658,16 @@ const Admin = () => {
         return renderBulkEmail();
       case "analytics":
         return renderAnalytics();
+      case "finances":
+        return renderFinances();
+      case "marketing":
+        return renderMarketing();
+      case "files":
+        return renderFiles();
+      case "notifications":
+        return renderNotifications();
+      case "settings":
+        return renderSettings();
       default:
         return (
           <div className="space-y-6">
