@@ -75,9 +75,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to client
     const clientEmailResponse = await resend.emails.send({
-      from: "ScholarCraft <noreply@bennangel4@gmail.com>",
+      from: "ScholarsCraft <hello@scholarscraft.com>",
       to: [email],
-      subject: "Quote Request Received - ScholarCraft Academic Services",
+      subject: "Quote Request Received - ScholarsCraft Academic Services",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #1e40af; text-align: center;">Thank you for your quote request!</h1>
@@ -100,7 +100,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p>If you have any urgent questions, feel free to contact us via WhatsApp at <a href="https://wa.me/+14802471779">+1 (480) 247-1779</a>.</p>
           
           <p>Best regards,<br>
-          The ScholarCraft Team</p>
+          The ScholarsCraft Team</p>
           
           <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
           <p style="font-size: 12px; color: #6b7280; text-align: center;">
@@ -112,7 +112,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
-      from: "ScholarCraft <noreply@bennangel4@gmail.com>",
+      from: "ScholarsCraft <hello@scholarscraft.com>",
       to: ["bennangel4@gmail.com"],
       subject: `New Quote Request from ${name}`,
       html: `

@@ -24,7 +24,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { email, confirmationLink, displayName }: ConfirmationEmailRequest = await req.json();
 
     const emailResponse = await resend.emails.send({
-      from: "ScholarsCraft <admin@gmail.com>",
+      from: "ScholarsCraft <hello@scholarscraft.com>",
       to: [email],
       subject: "Confirm Your Email - ScholarsCraft",
       html: `
