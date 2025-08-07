@@ -90,24 +90,11 @@ interface AdminStats {
   totalTickets: number;
 }
 
-// Mock data for analytics
-const mockTrafficData = [
-  { date: 'Jan 1', visitors: 1200, pageViews: 3400 },
-  { date: 'Jan 2', visitors: 1100, pageViews: 3200 },
-  { date: 'Jan 3', visitors: 1300, pageViews: 3800 },
-  { date: 'Jan 4', visitors: 1500, pageViews: 4200 },
-  { date: 'Jan 5', visitors: 1400, pageViews: 4000 },
-  { date: 'Jan 6', visitors: 1600, pageViews: 4500 },
-  { date: 'Jan 7', visitors: 1800, pageViews: 5000 },
-  { date: 'Jan 8', visitors: 1700, pageViews: 4800 },
-  { date: 'Jan 9', visitors: 1900, pageViews: 5200 },
-  { date: 'Jan 10', visitors: 2000, pageViews: 5500 },
-  { date: 'Jan 11', visitors: 1850, pageViews: 5100 },
-  { date: 'Jan 12', visitors: 1950, pageViews: 5300 },
-  { date: 'Jan 13', visitors: 2100, pageViews: 5800 },
-  { date: 'Jan 14', visitors: 2200, pageViews: 6000 },
-  { date: 'Jan 15', visitors: 2150, pageViews: 5900 },
-];
+interface AnalyticsData {
+  date: string;
+  visitors: number;
+  pageViews: number;
+}
 
 const Admin = () => {
   const { user } = useAuth();
@@ -132,6 +119,7 @@ const Admin = () => {
   const [emailContent, setEmailContent] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData[]>([]);
 
   // Sidebar menu items
   const menuItems = [
@@ -237,6 +225,14 @@ const Admin = () => {
           openTickets,
           totalTickets
         });
+
+        // Generate sample analytics data (replace with real analytics service)
+        const mockData = Array.from({ length: 15 }, (_, i) => ({
+          date: `Jan ${i + 1}`,
+          visitors: Math.floor(Math.random() * 1000) + 1000,
+          pageViews: Math.floor(Math.random() * 2000) + 3000,
+        }));
+        setAnalyticsData(mockData);
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -776,7 +772,7 @@ const Admin = () => {
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockTrafficData}>
+              <LineChart data={analyticsData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />

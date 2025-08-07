@@ -15,11 +15,13 @@ interface SupportTicket {
   id: string;
   title: string;
   description: string;
-  status: 'open' | 'in_progress' | 'resolved' | 'closed';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: string;
+  priority: string;
   user_id: string;
   created_at: string;
   updated_at: string;
+  category: string;
+  assigned_to: string | null;
   profiles?: {
     display_name: string;
     avatar_url: string;
@@ -39,39 +41,15 @@ export function SupportTickets() {
 
   const fetchTickets = async () => {
     try {
-      // Mock data until database table is ready
-      const mockTickets: SupportTicket[] = [
-        {
-          id: '1',
-          title: 'Cannot access my dashboard',
-          description: 'I am having trouble logging into my dashboard. The page keeps loading.',
-          status: 'open',
-          priority: 'high',
-          user_id: 'user1',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          profiles: {
-            display_name: 'John Doe',
-            avatar_url: ''
-          }
-        },
-        {
-          id: '2', 
-          title: 'Question about pricing',
-          description: 'I would like to know more about the pricing plans available.',
-          status: 'in_progress',
-          priority: 'medium',
-          user_id: 'user2',
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          updated_at: new Date(Date.now() - 43200000).toISOString(),
-          profiles: {
-            display_name: 'Jane Smith',
-            avatar_url: ''
-          }
-        }
-      ];
+      // Fetch support tickets from Supabase
+      const { data: ticketsData, error: ticketsError } = await supabase
+        .from('support_tickets')
+        .select('*, profiles(display_name, avatar_url)')
+        .order('created_at', { ascending: false });
 
-      setTickets(mockTickets);
+      if (ticketsError) throw ticketsError;
+
+      setTickets(ticketsData || []);
     } catch (error) {
       console.error('Error fetching support tickets:', error);
       toast({
@@ -85,19 +63,35 @@ export function SupportTickets() {
   };
 
   const updateTicketStatus = async (ticketId: string, newStatus: string) => {
-    // Update local state for now
-    setTickets(prev => 
-      prev.map(ticket => 
-        ticket.id === ticketId 
-          ? { ...ticket, status: newStatus as any, updated_at: new Date().toISOString() }
-          : ticket
-      )
-    );
+    try {
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', ticketId);
 
-    toast({
-      title: "Success", 
-      description: "Ticket status updated successfully",
-    });
+      if (error) throw error;
+
+      // Update local state
+      setTickets(prev => 
+        prev.map(ticket => 
+          ticket.id === ticketId 
+            ? { ...ticket, status: newStatus as any, updated_at: new Date().toISOString() }
+            : ticket
+        )
+      );
+
+      toast({
+        title: "Success", 
+        description: "Ticket status updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating ticket status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update ticket status",
+        variant: "destructive",
+      });
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -149,7 +143,23 @@ export function SupportTickets() {
     if (!selectedTicket || !response.trim()) return;
 
     try {
-      // In a real implementation, you'd save the response to a ticket_responses table
+      // Create notification for the user
+      const { error: notificationError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: selectedTicket.user_id,
+          title: `Response to: ${selectedTicket.title}`,
+          message: response,
+          type: 'support_response'
+        });
+
+      if (notificationError) throw notificationError;
+
+      // Update ticket status to in_progress if it was open
+      if (selectedTicket.status === 'open') {
+        await updateTicketStatus(selectedTicket.id, 'in_progress');
+      }
+
       toast({
         title: "Response Sent",
         description: "Your response has been sent to the customer",
