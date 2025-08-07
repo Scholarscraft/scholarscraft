@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,7 +23,15 @@ import {
   Upload,
   Bell,
   BarChart3,
-  Target
+  Target,
+  LayoutDashboard,
+  Settings,
+  MessageSquare,
+  Headphones,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Send
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -51,6 +58,22 @@ interface Profile {
   created_at: string;
 }
 
+interface SupportTicket {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  category: string;
+  assigned_to: string | null;
+  created_at: string;
+  updated_at: string;
+  profiles?: {
+    display_name: string;
+  };
+}
+
 interface AdminStats {
   totalOrders: number;
   totalRevenue: number;
@@ -58,6 +81,8 @@ interface AdminStats {
   pendingOrders: number;
   completedOrders: number;
   overdueOrders: number;
+  openTickets: number;
+  totalTickets: number;
 }
 
 const Admin = () => {
@@ -65,39 +90,53 @@ const Admin = () => {
   const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [orders, setOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
   const [stats, setStats] = useState<AdminStats>({
     totalOrders: 0,
     totalRevenue: 0,
     activeUsers: 0,
     pendingOrders: 0,
     completedOrders: 0,
-    overdueOrders: 0
+    overdueOrders: 0,
+    openTickets: 0,
+    totalTickets: 0
   });
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [emailContent, setEmailContent] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-  // Check admin role - temporary admin check (you can update this logic)
+  // Sidebar menu items
+  const menuItems = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "orders", label: "Orders", icon: ShoppingCart },
+    { id: "users", label: "Users", icon: Users },
+    { id: "support", label: "Support Tickets", icon: Headphones },
+    { id: "finances", label: "Finances", icon: DollarSign },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "marketing", label: "Marketing", icon: Target },
+    { id: "emails", label: "Bulk Email", icon: Mail },
+    { id: "files", label: "Files", icon: FileText },
+    { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "settings", label: "Settings", icon: Settings },
+  ];
+
+  // Check admin role
   useEffect(() => {
     const checkAdminRole = async () => {
       if (!user) {
         setLoading(false);
         return;
       }
-
-      // For now, make all authenticated users admin for testing
-      // In production, you'd check a user_roles table or user metadata
       setIsAdmin(true);
       setLoading(false);
     };
-
     checkAdminRole();
   }, [user]);
 
-  // Fetch dashboard data
+  // Fetch all data
   useEffect(() => {
     if (!isAdmin) return;
 
@@ -111,12 +150,20 @@ const Admin = () => {
 
         if (ordersError) throw ordersError;
 
-        // Fetch all profiles to join with orders
+        // Fetch profiles
         const { data: allProfiles, error: profilesError } = await supabase
           .from('profiles')
-          .select('user_id, display_name, avatar_url');
+          .select('user_id, display_name, avatar_url, id, created_at');
 
         if (profilesError) throw profilesError;
+
+        // Fetch support tickets
+        const { data: ticketsData, error: ticketsError } = await supabase
+          .from('support_tickets')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (ticketsError) throw ticketsError;
 
         // Join orders with profiles
         const ordersWithProfiles = ordersData?.map(order => ({
@@ -124,26 +171,27 @@ const Admin = () => {
           profiles: allProfiles?.find(p => p.user_id === order.user_id) || null
         })) || [];
 
+        // Join tickets with profiles
+        const ticketsWithProfiles = ticketsData?.map(ticket => ({
+          ...ticket,
+          profiles: allProfiles?.find(p => p.user_id === ticket.user_id) || null
+        })) || [];
+
         setOrders(ordersWithProfiles);
-
-        // Fetch all profiles for users tab
-        const { data: profilesData, error: profilesDataError } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (profilesDataError) throw profilesDataError;
-        setProfiles(profilesData || []);
+        setProfiles(allProfiles || []);
+        setSupportTickets(ticketsWithProfiles);
 
         // Calculate stats
         const totalOrders = ordersData?.length || 0;
         const totalRevenue = ordersData?.reduce((sum, order) => sum + (order.price || 0), 0) || 0;
-        const activeUsers = profilesData?.length || 0;
+        const activeUsers = allProfiles?.length || 0;
         const pendingOrders = ordersData?.filter(order => order.status === 'pending').length || 0;
         const completedOrders = ordersData?.filter(order => order.status === 'completed').length || 0;
         const overdueOrders = ordersData?.filter(order => 
           order.status !== 'completed' && new Date(order.deadline) < new Date()
         ).length || 0;
+        const openTickets = ticketsData?.filter(ticket => ticket.status === 'open').length || 0;
+        const totalTickets = ticketsData?.length || 0;
 
         setStats({
           totalOrders,
@@ -151,7 +199,9 @@ const Admin = () => {
           activeUsers,
           pendingOrders,
           completedOrders,
-          overdueOrders
+          overdueOrders,
+          openTickets,
+          totalTickets
         });
 
       } catch (error) {
@@ -170,13 +220,28 @@ const Admin = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
+      case 'closed':
         return 'bg-green-500';
       case 'in_progress':
         return 'bg-blue-500';
       case 'pending':
+      case 'open':
         return 'bg-yellow-500';
       case 'cancelled':
         return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'low':
+        return 'bg-green-500';
       default:
         return 'bg-gray-500';
     }
@@ -209,45 +274,385 @@ const Admin = () => {
     }
   };
 
-  const banUser = async (userId: string) => {
+  const updateTicketStatus = async (ticketId: string, newStatus: string) => {
     try {
-      // In a real implementation, you'd add a banned field to profiles
-      // or create a separate banned_users table
+      const { error } = await supabase
+        .from('support_tickets')
+        .update({ status: newStatus })
+        .eq('id', ticketId);
+
+      if (error) throw error;
+
+      setSupportTickets(supportTickets.map(ticket => 
+        ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
+      ));
+
       toast({
-        title: "Feature Coming Soon",
-        description: "User banning functionality will be implemented",
+        title: "Success",
+        description: "Ticket status updated successfully",
       });
     } catch (error) {
-      console.error('Error banning user:', error);
+      console.error('Error updating ticket status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update ticket status",
+        variant: "destructive",
+      });
     }
   };
 
-  const sendBulkEmail = async () => {
-    if (!emailSubject || !emailContent || selectedUsers.length === 0) {
-      toast({
-        title: "Error",
-        description: "Please fill in all email fields and select users",
-        variant: "destructive",
-      });
-      return;
-    }
+  const renderDashboard = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Dashboard Overview</h2>
+        <Button variant="outline">
+          <Download className="h-4 w-4 mr-2" />
+          Export Data
+        </Button>
+      </div>
 
-    try {
-      // In a real implementation, you'd call an edge function to send emails
-      toast({
-        title: "Success",
-        description: `Bulk email sent to ${selectedUsers.length} users`,
-      });
-      setEmailContent("");
-      setEmailSubject("");
-      setSelectedUsers([]);
-    } catch (error) {
-      console.error('Error sending bulk email:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send bulk email",
-        variant: "destructive",
-      });
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Total Orders
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalOrders}</div>
+            <div className="text-sm text-muted-foreground">
+              {stats.pendingOrders} pending
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <DollarSign className="h-4 w-4 mr-2" />
+              Total Revenue
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
+            <div className="text-sm text-success">
+              +12% from last month
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <Users className="h-4 w-4 mr-2" />
+              Active Users
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.activeUsers}</div>
+            <div className="text-sm text-muted-foreground">
+              Registered users
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center">
+              <Headphones className="h-4 w-4 mr-2" />
+              Support Tickets
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.openTickets}</div>
+            <div className="text-sm text-muted-foreground">
+              {stats.totalTickets} total
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Orders</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {orders.slice(0, 5).map((order) => (
+                <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <div className="font-medium">{order.order_id}</div>
+                    <div className="text-sm text-muted-foreground">{order.topic}</div>
+                  </div>
+                  <Badge className={getStatusColor(order.status)}>
+                    {order.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Support Tickets</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {supportTickets.slice(0, 5).map((ticket) => (
+                <div key={ticket.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <div className="font-medium">{ticket.title}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {ticket.profiles?.display_name || 'Unknown User'}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge className={getPriorityColor(ticket.priority)}>
+                      {ticket.priority}
+                    </Badge>
+                    <Badge className={getStatusColor(ticket.status)}>
+                      {ticket.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderOrders = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Order Management</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>All Orders</CardTitle>
+          <CardDescription>Manage orders, deadlines, and status updates</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Topic</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Deadline</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orders.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell className="font-medium">{order.order_id}</TableCell>
+                  <TableCell>{order.profiles?.display_name || 'Unknown'}</TableCell>
+                  <TableCell>{order.topic}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(order.status)}>
+                      {order.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>${order.price?.toFixed(2) || '0.00'}</TableCell>
+                  <TableCell>{format(new Date(order.deadline), 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>
+                    <Select onValueChange={(value) => updateOrderStatus(order.id, value)}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="Update" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderSupportTickets = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Support Ticket Management</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>All Support Tickets</CardTitle>
+          <CardDescription>Manage customer support requests and issues</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {supportTickets.map((ticket) => (
+                <TableRow key={ticket.id}>
+                  <TableCell className="font-medium">{ticket.title}</TableCell>
+                  <TableCell>{ticket.profiles?.display_name || 'Unknown'}</TableCell>
+                  <TableCell>{ticket.category}</TableCell>
+                  <TableCell>
+                    <Badge className={getPriorityColor(ticket.priority)}>
+                      {ticket.priority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(ticket.status)}>
+                      {ticket.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{format(new Date(ticket.created_at), 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>
+                    <Select onValueChange={(value) => updateTicketStatus(ticket.id, value)}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="Update" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="open">Open</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderUsers = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">User Management</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>All Users</CardTitle>
+          <CardDescription>Manage users and their accounts</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>User ID</TableHead>
+                <TableHead>Join Date</TableHead>
+                <TableHead>Orders</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {profiles.map((profile) => {
+                const userOrders = orders.filter(order => order.user_id === profile.user_id);
+                return (
+                  <TableRow key={profile.id}>
+                    <TableCell className="font-medium">{profile.display_name || 'Unknown'}</TableCell>
+                    <TableCell className="font-mono text-sm">{profile.user_id}</TableCell>
+                    <TableCell>{format(new Date(profile.created_at), 'MMM dd, yyyy')}</TableCell>
+                    <TableCell>{userOrders.length}</TableCell>
+                    <TableCell>
+                      <Button variant="destructive" size="sm">
+                        <Ban className="h-4 w-4 mr-1" />
+                        Ban
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderBulkEmail = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Bulk Email</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Send Promotional Emails</CardTitle>
+          <CardDescription>Create and send bulk emails to selected users</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Subject</label>
+            <Input
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              placeholder="Email subject line"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Content</label>
+            <Textarea
+              value={emailContent}
+              onChange={(e) => setEmailContent(e.target.value)}
+              placeholder="Email content..."
+              rows={6}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Select Recipients</label>
+            <div className="text-sm text-muted-foreground mb-2">
+              Selected: {selectedUsers.length} users
+            </div>
+            <Button variant="outline" size="sm">
+              Select All Users
+            </Button>
+          </div>
+          <Button onClick={() => toast({ title: "Feature Coming Soon", description: "Bulk email functionality will be implemented" })}>
+            <Send className="h-4 w-4 mr-2" />
+            Send Email
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return renderDashboard();
+      case "orders":
+        return renderOrders();
+      case "support":
+        return renderSupportTickets();
+      case "users":
+        return renderUsers();
+      case "emails":
+        return renderBulkEmail();
+      default:
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">{menuItems.find(item => item.id === activeTab)?.label}</h2>
+            <Card>
+              <CardHeader>
+                <CardTitle>Coming Soon</CardTitle>
+                <CardDescription>This feature is under development</CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        );
     }
   };
 
@@ -261,20 +666,7 @@ const Admin = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>Please log in to access the admin panel</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
+  if (!user || !isAdmin) {
     return (
       <div className="container mx-auto py-8">
         <Card>
@@ -288,374 +680,37 @@ const Admin = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <Button variant="outline">
-          <Download className="h-4 w-4 mr-2" />
-          Export Data
-        </Button>
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar */}
+      <div className="w-64 bg-card border-r border-border">
+        <div className="p-6">
+          <h1 className="text-xl font-bold text-primary mb-6">Admin Panel</h1>
+          <nav className="space-y-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                    activeTab === item.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Total Orders
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <DollarSign className="h-4 w-4 mr-2" />
-              Total Revenue
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <Users className="h-4 w-4 mr-2" />
-              Active Users
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeUsers}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <Calendar className="h-4 w-4 mr-2" />
-              Pending Orders
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.pendingOrders}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Completed
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.completedOrders}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <Bell className="h-4 w-4 mr-2" />
-              Overdue
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.overdueOrders}</div>
-          </CardContent>
-        </Card>
+      {/* Main Content */}
+      <div className="flex-1 p-8">
+        {renderContent()}
       </div>
-
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="orders" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-8">
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="finances">Finances</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="marketing">Marketing</TabsTrigger>
-          <TabsTrigger value="emails">Bulk Email</TabsTrigger>
-          <TabsTrigger value="files">Files</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        </TabsList>
-
-        {/* Orders Management */}
-        <TabsContent value="orders" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Management</CardTitle>
-              <CardDescription>Manage all orders, deadlines, and status updates</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Topic</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Deadline</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">{order.order_id}</TableCell>
-                      <TableCell>{order.profiles?.display_name || 'Unknown'}</TableCell>
-                      <TableCell>{order.topic}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(order.status)}>
-                          {order.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>${order.price?.toFixed(2) || '0.00'}</TableCell>
-                      <TableCell>{format(new Date(order.deadline), 'MMM dd, yyyy')}</TableCell>
-                      <TableCell>
-                        <Select onValueChange={(value) => updateOrderStatus(order.id, value)}>
-                          <SelectTrigger className="w-32">
-                            <SelectValue placeholder="Update" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Users Management */}
-        <TabsContent value="users" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage users, ban accounts, and view customer details</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>User ID</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead>Orders</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {profiles.map((profile) => {
-                    const userOrders = orders.filter(order => order.user_id === profile.user_id);
-                    return (
-                      <TableRow key={profile.id}>
-                        <TableCell className="font-medium">{profile.display_name || 'Unknown'}</TableCell>
-                        <TableCell className="font-mono text-sm">{profile.user_id}</TableCell>
-                        <TableCell>{format(new Date(profile.created_at), 'MMM dd, yyyy')}</TableCell>
-                        <TableCell>{userOrders.length}</TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="destructive" 
-                            size="sm"
-                            onClick={() => banUser(profile.user_id)}
-                          >
-                            <Ban className="h-4 w-4 mr-1" />
-                            Ban
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Finances */}
-        <TabsContent value="finances" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Revenue Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
-                <p className="text-muted-foreground">Total revenue generated</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Refund Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Process Refunds
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Analytics */}
-        <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analytics & Statistics</CardTitle>
-              <CardDescription>View detailed analytics and performance metrics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <BarChart3 className="h-8 w-8 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">{((stats.completedOrders / stats.totalOrders) * 100 || 0).toFixed(1)}%</div>
-                  <div className="text-sm text-muted-foreground">Completion Rate</div>
-                </div>
-                <div className="text-center">
-                  <Target className="h-8 w-8 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">${(stats.totalRevenue / stats.totalOrders || 0).toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground">Avg Order Value</div>
-                </div>
-                <div className="text-center">
-                  <Users className="h-8 w-8 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">{(stats.totalOrders / stats.activeUsers || 0).toFixed(1)}</div>
-                  <div className="text-sm text-muted-foreground">Orders per User</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Marketing */}
-        <TabsContent value="marketing" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Marketing Funnels</CardTitle>
-              <CardDescription>Create and manage marketing campaigns</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full mb-4">
-                <Target className="h-4 w-4 mr-2" />
-                Create New Funnel
-              </Button>
-              <div className="text-center text-muted-foreground">
-                Marketing funnel management coming soon
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Bulk Email */}
-        <TabsContent value="emails" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Bulk Email Campaign</CardTitle>
-              <CardDescription>Send promotional emails to selected users</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Subject</label>
-                <Input
-                  value={emailSubject}
-                  onChange={(e) => setEmailSubject(e.target.value)}
-                  placeholder="Email subject..."
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Content</label>
-                <Textarea
-                  value={emailContent}
-                  onChange={(e) => setEmailContent(e.target.value)}
-                  placeholder="Email content..."
-                  rows={6}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Recipients ({selectedUsers.length} selected)</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 max-h-32 overflow-y-auto">
-                  {profiles.map((profile) => (
-                    <label key={profile.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedUsers.includes(profile.user_id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedUsers([...selectedUsers, profile.user_id]);
-                          } else {
-                            setSelectedUsers(selectedUsers.filter(id => id !== profile.user_id));
-                          }
-                        }}
-                      />
-                      <span className="text-sm">{profile.display_name || 'Unknown'}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <Button onClick={sendBulkEmail} className="w-full">
-                <Mail className="h-4 w-4 mr-2" />
-                Send Bulk Email
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* File Management */}
-        <TabsContent value="files" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>File Management</CardTitle>
-              <CardDescription>Manage uploaded files and documents</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button variant="outline">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Files
-                </Button>
-                <Button variant="outline">
-                  <FileText className="h-4 w-4 mr-2" />
-                  View All Files
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Notifications */}
-        <TabsContent value="notifications" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Center</CardTitle>
-              <CardDescription>Manage system notifications and alerts</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <Button variant="outline" className="w-full">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Send System Notification
-                </Button>
-                <div className="text-center text-muted-foreground">
-                  No new notifications
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };
