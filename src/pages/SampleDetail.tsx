@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Eye, FileText, Users, Shield, Clock, CheckCircle } from "lucide-react";
+import { Eye, FileText, Users, Shield, Clock, CheckCircle, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import PDFViewer from "@/components/PDFViewer";
 
 interface SamplePaper {
   id: string;
@@ -155,14 +156,39 @@ This sample represents the high-quality academic work that consistently achieves
               </div>
 
               {/* Content Section */}
-              <div className="prose prose-gray max-w-none">
-                <h2 className="text-xl font-semibold text-primary mb-4">
-                  {sample.subject}: Academic Excellence Demonstrated
-                </h2>
-                
-                <div className="whitespace-pre-line text-foreground leading-relaxed">
-                  {fullContent}
-                </div>
+              <div className="mb-6">
+                {sample.file_url && sample.file_url.endsWith('.pdf') ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold text-primary">
+                        Full Document Preview
+                      </h2>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => window.open(sample.file_url, '_blank')}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download PDF
+                      </Button>
+                    </div>
+                    <PDFViewer 
+                      fileUrl={sample.file_url} 
+                      title={sample.title}
+                      maxHeight="70vh"
+                      onDownload={() => window.open(sample.file_url, '_blank')}
+                    />
+                  </div>
+                ) : (
+                  <div className="prose prose-gray max-w-none">
+                    <h2 className="text-xl font-semibold text-primary mb-4">
+                      {sample.subject}: Academic Excellence Demonstrated
+                    </h2>
+                    
+                    <div className="whitespace-pre-line text-foreground leading-relaxed">
+                      {fullContent}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

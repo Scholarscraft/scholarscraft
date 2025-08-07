@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, FileText, Calendar, User, Download } from "lucide-react";
 import { Link } from "react-router-dom";
+import PDFViewer from "@/components/PDFViewer";
 
 interface Sample {
   id?: string;
@@ -147,14 +148,15 @@ This sample demonstrates our commitment to academic excellence and our ability t
           <div className="lg:col-span-2">
             <ScrollArea className="h-[60vh] pr-4">
               {sample.file_url && sample.file_url.endsWith('.pdf') ? (
-                <div className="w-full h-full">
+                <div className="w-full">
                   <div className="text-muted-foreground text-sm mb-4 p-3 bg-muted/50 rounded-lg border-l-4 border-primary">
-                    <strong>Document Preview:</strong> This is a preview of the actual sample paper. Download the full document for the complete content.
+                    <strong>Document Preview:</strong> This is a preview of the actual sample paper. Use the controls to navigate and zoom.
                   </div>
-                  <iframe
-                    src={`${sample.file_url}#view=FitH`}
-                    className="w-full h-[50vh] border border-border rounded-lg"
-                    title="Sample Paper Preview"
+                  <PDFViewer 
+                    fileUrl={sample.file_url} 
+                    title={sample.title}
+                    maxHeight="45vh"
+                    onDownload={() => window.open(sample.file_url!, '_blank')}
                   />
                 </div>
               ) : (
