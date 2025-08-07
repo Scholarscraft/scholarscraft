@@ -23,7 +23,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { email, resetLink }: PasswordResetRequest = await req.json();
 
     const emailResponse = await resend.emails.send({
-      from: "ScholarsCraft <noreply@resend.dev>",
+      from: "ScholarsCraft <hello@scholarscraft.com>",
       to: [email],
       subject: "Reset Your Password - ScholarsCraft",
       html: `
