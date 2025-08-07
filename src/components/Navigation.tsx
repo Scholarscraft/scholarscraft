@@ -4,7 +4,15 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Menu, X, GraduationCap, MessageCircle, User, LogOut } from "lucide-react";
+import { Menu, X, GraduationCap, MessageCircle, User, LogOut, Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -69,15 +77,29 @@ const Navigation = () => {
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
             {user ? (
-              <div className="flex items-center space-x-3">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/dashboard">Dashboard</Link>
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-8 w-8 cursor-pointer">
+                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {user.email?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="flex items-center">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-3">
                 <Button variant="outline" size="sm" asChild>
@@ -128,8 +150,19 @@ const Navigation = () => {
                 </div>
                 {user ? (
                   <div className="space-y-2">
+                    <div className="flex justify-center mb-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.user_metadata?.avatar_url} />
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {user.email?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
                     <Button variant="outline" size="sm" className="w-full" asChild>
-                      <Link to="/dashboard">Dashboard</Link>
+                      <Link to="/dashboard">
+                        <User className="h-4 w-4" />
+                        Dashboard
+                      </Link>
                     </Button>
                     <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
                       <LogOut className="h-4 w-4" />
