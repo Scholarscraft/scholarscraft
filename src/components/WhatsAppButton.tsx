@@ -7,27 +7,20 @@ const WhatsAppButton = () => {
   const whatsappUrl = `https://wa.me/${phoneNumber.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3">
-      {/* WhatsApp Us Text */}
-      <div className="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-lg border">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          WhatsApp Us
-        </span>
-      </div>
-      
-      {/* WhatsApp Button */}
+    <div className="fixed bottom-6 right-6 z-50">
       <Button
         asChild
-        className="h-14 w-14 rounded-full bg-[#25D366] hover:bg-[#20BA5A] shadow-lg hover:shadow-xl transition-all duration-300"
+        className="bg-[#25D366] hover:bg-[#20BA5A] text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2"
         title="Chat on WhatsApp"
       >
         <a
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center"
+          className="flex items-center space-x-2"
         >
-          <MessageCircle className="h-6 w-6 text-white" />
+          <MessageCircle className="h-5 w-5" />
+          <span className="text-sm font-medium">WhatsApp Us</span>
         </a>
       </Button>
     </div>
