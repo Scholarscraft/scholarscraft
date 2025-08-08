@@ -15,6 +15,7 @@ import {
   Upload,
   Send
 } from "lucide-react";
+import whatsappLogo from "@/assets/whatsapp-logo.svg";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -149,12 +150,12 @@ const Contact = () => {
               </p>
               
               <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="bg-accent text-accent-foreground p-3 rounded-lg">
-                    <MessageCircle className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">WhatsApp</h3>
+                 <div className="flex items-start space-x-4">
+                   <div className="bg-accent text-accent-foreground p-3 rounded-lg">
+                     <img src={whatsappLogo} alt="WhatsApp" className="h-6 w-6" />
+                   </div>
+                   <div>
+                     <h3 className="font-semibold text-foreground">WhatsApp</h3>
                     <p className="text-muted-foreground">+1 480 247 1779</p>
                     <Button variant="link" className="p-0 h-auto" asChild>
                       <a href="https://wa.me/+14802471779" target="_blank" rel="noopener noreferrer">
@@ -170,9 +171,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Email</h3>
-                    <p className="text-muted-foreground">bennangel4@gmail.com</p>
-                    <Button variant="link" className="p-0 h-auto" asChild>
-                      <a href="mailto:bennangel4@gmail.com">Send Email</a>
+                     <p className="text-muted-foreground">support@scholarscraft.com</p>
+                     <Button variant="link" className="p-0 h-auto" asChild>
+                       <a href="mailto:support@scholarscraft.com">Send Email</a>
                     </Button>
                   </div>
                 </div>
