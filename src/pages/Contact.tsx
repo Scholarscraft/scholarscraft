@@ -152,7 +152,7 @@ const Contact = () => {
               <div className="space-y-6">
                  <div className="flex items-start space-x-4">
                    <div className="bg-accent text-accent-foreground p-3 rounded-lg">
-                     <img src={whatsappLogo} alt="WhatsApp" className="h-6 w-6" />
+                     <img src={whatsappLogo} alt="WhatsApp" className="h-5 w-5" />
                    </div>
                    <div>
                      <h3 className="font-semibold text-foreground">WhatsApp</h3>
