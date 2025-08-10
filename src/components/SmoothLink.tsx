@@ -6,8 +6,13 @@ interface SmoothLinkProps extends LinkProps {
   className?: string;
 }
 
-const SmoothLink: React.FC<SmoothLinkProps> = ({ children, className, to, ...props }) => {
-  const handleClick = () => {
+const SmoothLink: React.FC<SmoothLinkProps> = ({ children, className = "", to, onClick, ...props }) => {
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    // Call the original onClick handler if provided
+    if (onClick) {
+      onClick(event);
+    }
+    
     // Add a small delay to ensure route change happens first
     setTimeout(() => {
       window.scrollTo({
