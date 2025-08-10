@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 import { Star, Quote, GraduationCap, Award, Users, Gift } from "lucide-react";
-import Autoplay from "embla-carousel-autoplay";
+
 import { useEffect, useState, useRef } from "react";
 
 const CountingNumber = ({ end, suffix = "", duration = 2000 }) => {
@@ -221,11 +221,6 @@ const Testimonials = () => {
 
           <Carousel 
             className="w-full max-w-5xl mx-auto"
-            plugins={[
-              Autoplay({
-                delay: 4000,
-              }),
-            ]}
             opts={{
               align: "start",
               loop: true,
