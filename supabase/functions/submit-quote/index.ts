@@ -113,7 +113,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
       from: "ScholarsCraft <hello@scholarscraft.com>",
-      to: ["bennangel4@gmail.com"],
+      to: ["support@scholarscraft.com"],
       subject: `New Quote Request from ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
