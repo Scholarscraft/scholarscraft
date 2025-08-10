@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
@@ -22,15 +23,14 @@ export const useUserRole = () => {
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
-          .order('role', { ascending: true }) // admin comes first in enum order
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.log('No role found for user, defaulting to null');
           setRole(null);
         } else {
-          setRole(data.role as UserRole);
+          setRole(data?.role as UserRole || null);
         }
       } catch (err) {
         console.error('Error fetching user role:', err);
