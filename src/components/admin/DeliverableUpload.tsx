@@ -41,31 +41,41 @@ export const DeliverableUpload = () => {
     setSearching(true);
     try {
       if (identificationMethod === "email") {
-        // Search by email - get user profile and their auth user email
-        const { data: profiles, error } = await supabase
-          .from('profiles')
-          .select('user_id, display_name')
-          .ilike('display_name', `%${emailInput.trim()}%`);
-
-        if (error) throw error;
-
-        if (profiles && profiles.length > 0) {
-          // For now, take the first match - in production you might want to show a list
-          const profile = profiles[0];
-          
-          // Get user's auth email
-          const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(profile.user_id);
-          
-          setUserPreview({
-            id: profile.user_id,
-            display_name: profile.display_name || 'Unknown User',
-            email: user?.email
-          });
-          setOrderPreview(null); // Clear any previous order preview
-        } else {
+        // Search by email using admin getUserByEmail
+        const { data: authUser, error: authError } = await supabase.auth.admin.getUserByEmail(emailInput.trim());
+        
+        if (authError) {
+          console.error('Auth error:', authError);
           toast({
             title: "User not found",
-            description: "No user found with that email/name",
+            description: "No user found with that email",
+            variant: "destructive"
+          });
+          setUserPreview(null);
+          setOrderPreview(null);
+          return;
+        }
+
+        if (authUser.user) {
+          // Get additional profile info
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('user_id', authUser.user.id)
+            .single();
+
+          setUserPreview({
+            id: authUser.user.id,
+            display_name: profile?.display_name || authUser.user.email || 'Unknown User',
+            email: authUser.user.email || emailInput.trim()
+          });
+          setOrderPreview(null);
+        } else {
+          setUserPreview(null);
+          setOrderPreview(null);
+          toast({
+            title: "User not found",
+            description: "No user found with that email",
             variant: "destructive"
           });
         }
@@ -74,7 +84,7 @@ export const DeliverableUpload = () => {
         const { data: orders, error } = await supabase
           .from('orders')
           .select('order_id, topic, user_id')
-          .eq('order_id', orderIdInput.trim());
+          .eq('order_id', orderIdInput.trim().toUpperCase());
 
         if (error) throw error;
 
@@ -82,7 +92,7 @@ export const DeliverableUpload = () => {
           const order = orders[0];
           
           // Get user profile for the order
-          const { data: profiles } = await supabase
+          const { data: profile } = await supabase
             .from('profiles')
             .select('display_name')
             .eq('user_id', order.user_id)
@@ -98,10 +108,12 @@ export const DeliverableUpload = () => {
           });
           setUserPreview({
             id: order.user_id,
-            display_name: profiles?.display_name || 'Unknown User',
-            email: user?.email
+            display_name: profile?.display_name || 'Unknown User',
+            email: user?.email || 'Not available'
           });
         } else {
+          setUserPreview(null);
+          setOrderPreview(null);
           toast({
             title: "Order not found",
             description: "No order found with that ID",
@@ -110,11 +122,14 @@ export const DeliverableUpload = () => {
         }
       }
     } catch (error: any) {
+      console.error('Search error:', error);
       toast({
         title: "Search failed",
         description: error.message,
         variant: "destructive"
       });
+      setUserPreview(null);
+      setOrderPreview(null);
     } finally {
       setSearching(false);
     }
