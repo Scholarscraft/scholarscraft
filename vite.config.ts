@@ -20,7 +20,19 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['pdfjs-dist'],
+    include: ['pdfjs-dist', 'react', 'react-dom', 'react-router-dom'],
+    exclude: ['lucide-react'],
   },
   assetsInclude: ['**/*.pdf'],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-toast'],
+        },
+      },
+    },
+  },
 }));

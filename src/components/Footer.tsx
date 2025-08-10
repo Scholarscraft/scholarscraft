@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import SmoothLink from "./SmoothLink";
 import { GraduationCap, Mail, MessageCircle, MapPin, Facebook, Instagram, Send } from "lucide-react";
 
 const Footer = () => {
@@ -71,12 +71,12 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/services" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Our Services</Link></li>
-              <li><Link to="/pricing" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Pricing</Link></li>
-              <li><Link to="/samples" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Sample Work</Link></li>
-              <li><Link to="/testimonials" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Testimonials</Link></li>
-              <li><Link to="/testimonials#faq" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">FAQs</Link></li>
-              <li><Link to="/contact" className="opacity-90 hover:opacity-100 hover:text-accent transition-colors">Contact Us</Link></li>
+              <li><SmoothLink to="/services" className="opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">Our Services</SmoothLink></li>
+              <li><SmoothLink to="/pricing" className="opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">Pricing</SmoothLink></li>
+              <li><SmoothLink to="/samples" className="opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">Sample Work</SmoothLink></li>
+              <li><SmoothLink to="/testimonials" className="opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">Testimonials</SmoothLink></li>
+              <li><SmoothLink to="/testimonials#faq" className="opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">FAQs</SmoothLink></li>
+              <li><SmoothLink to="/contact" className="opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">Contact Us</SmoothLink></li>
             </ul>
           </div>
 
@@ -142,12 +142,12 @@ const Footer = () => {
               © 2025 ScholarsCraft. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-sm opacity-90 hover:opacity-100 hover:text-accent transition-colors">
+              <SmoothLink to="/privacy" className="text-sm opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">
                 Privacy Policy
-              </Link>
-              <Link to="/terms" className="text-sm opacity-90 hover:opacity-100 hover:text-accent transition-colors">
+              </SmoothLink>
+              <SmoothLink to="/terms" className="text-sm opacity-90 hover:opacity-100 hover:text-accent transition-all duration-300 story-link">
                 Terms of Service
-              </Link>
+              </SmoothLink>
             </div>
           </div>
         </div>
