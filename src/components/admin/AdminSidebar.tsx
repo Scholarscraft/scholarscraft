@@ -10,7 +10,9 @@ import {
   FileText, 
   Bell,
   MessageCircle,
-  Settings
+  Settings,
+  Upload,
+  FileCheck
 } from "lucide-react";
 import {
   Sidebar,
@@ -77,6 +79,18 @@ const sidebarItems = [
     title: "Support Tickets", 
     icon: MessageCircle,
     description: "Customer Support"
+  },
+  { 
+    id: "upload-deliverable", 
+    title: "Upload Deliverable", 
+    icon: Upload,
+    description: "Upload Files to Users"
+  },
+  { 
+    id: "manage-deliverables", 
+    title: "Manage Deliverables", 
+    icon: FileCheck,
+    description: "View & Manage Uploads"
   },
   { 
     id: "files", 

@@ -1666,7 +1666,11 @@ const Admin = () => {
       case "samples":
         return <SamplePapersManager />;
       case "support":
-        return renderSupportTickets();
+        return <SupportTickets />;
+      case "upload-deliverable":
+        return <DeliverableUpload />;
+      case "manage-deliverables":
+        return <DeliverableManager />;
       case "deliverables":
         return (
           <div className="space-y-6">

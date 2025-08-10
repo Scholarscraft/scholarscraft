@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { CalendarDays, Clock, DollarSign, FileText, Settings, User, Upload } from "lucide-react";
+import { CalendarDays, Clock, DollarSign, FileText, Settings, User, Upload, Download, CheckCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -41,12 +41,31 @@ interface Profile {
   updated_at: string;
 }
 
+interface Deliverable {
+  id: string;
+  title: string;
+  file_name: string;
+  file_url: string;
+  file_size: number;
+  order_id: string | null;
+  status: string;
+  delivery_notes: string | null;
+  uploaded_by: string;
+  created_at: string;
+  updated_at: string;
+  uploader?: {
+    display_name: string;
+  } | null;
+}
+
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [deliverables, setDeliverables] = useState<Deliverable[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [loadingDeliverables, setLoadingDeliverables] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
@@ -65,9 +84,46 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchOrders();
+      fetchDeliverables();
       fetchProfile();
+      setupRealtimeSubscriptions();
     }
   }, [user]);
+
+  const setupRealtimeSubscriptions = () => {
+    if (!user) return;
+
+    // Real-time subscription for deliverables
+    const deliverablesChannel = supabase
+      .channel('deliverables-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'deliverables',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Deliverable change received:', payload);
+          
+          if (payload.eventType === 'INSERT') {
+            toast({
+              title: "New Deliverable Available!",
+              description: `${payload.new.title} has been uploaded for you.`,
+            });
+            fetchDeliverables();
+          } else if (payload.eventType === 'UPDATE') {
+            fetchDeliverables();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(deliverablesChannel);
+    };
+  };
 
   const fetchOrders = async () => {
     try {
@@ -88,6 +144,45 @@ const Dashboard = () => {
       });
     } finally {
       setLoadingOrders(false);
+    }
+  };
+
+  const fetchDeliverables = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('deliverables')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      // Fetch uploader info separately to avoid complex join issues
+      const deliverablesWithUploaders = await Promise.all(
+        (data || []).map(async (deliverable) => {
+          const { data: uploaderData } = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('user_id', deliverable.uploaded_by)
+            .maybeSingle();
+          
+          return {
+            ...deliverable,
+            uploader: uploaderData
+          };
+        })
+      );
+      
+      setDeliverables(deliverablesWithUploaders);
+    } catch (error) {
+      console.error('Error fetching deliverables:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load deliverables",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingDeliverables(false);
     }
   };
 
@@ -295,6 +390,65 @@ const Dashboard = () => {
     return diffDays;
   };
 
+  const downloadFile = async (fileUrl: string, fileName: string, deliverableId: string) => {
+    try {
+      // Update status to indicate user accessed the file
+      await supabase
+        .from('deliverables')
+        .update({ status: 'downloaded' })
+        .eq('id', deliverableId);
+
+      // Download the file
+      const { data, error } = await supabase.storage
+        .from('deliverables')
+        .download(fileUrl.split('/').pop() || '');
+
+      if (error) throw error;
+
+      // Create download link
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      // Refresh deliverables to show updated status
+      fetchDeliverables();
+
+      toast({
+        title: "Download Started",
+        description: `${fileName} is downloading...`,
+      });
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast({
+        title: "Download Failed",
+        description: "Failed to download the file. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  };
+
+  const getDeliverableStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'bg-accent/20 text-accent-foreground border-accent/30';
+      case 'delivered':
+        return 'bg-secondary text-secondary-foreground border-border';
+      case 'downloaded':
+        return 'bg-muted text-muted-foreground border-border';
+      default:
+        return 'bg-muted text-muted-foreground border-border';
+    }
+  };
+
   if (loading || loadingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -468,15 +622,137 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="completed" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Deliverables</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{deliverables.length}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">New Deliverables</CardTitle>
+                  <Download className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {deliverables.filter(d => d.status === 'pending').length}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Downloaded</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {deliverables.filter(d => d.status === 'downloaded').length}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardHeader>
-                <CardTitle>Completed Work</CardTitle>
+                <CardTitle>Your Deliverables</CardTitle>
                 <CardDescription>Download your completed assignments and papers</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8 text-muted-foreground">
-                  Completed work functionality coming soon...
-                </div>
+                {loadingDeliverables ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                ) : deliverables.length === 0 ? (
+                  <div className="text-center py-8">
+                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No deliverables available yet.</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Completed work will appear here when ready for download.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Order ID</TableHead>
+                          <TableHead>File Info</TableHead>
+                          <TableHead>Uploaded By</TableHead>
+                          <TableHead>Upload Date</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {deliverables.map((deliverable) => (
+                          <TableRow key={deliverable.id}>
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="font-medium">{deliverable.title}</span>
+                                {deliverable.delivery_notes && (
+                                  <span className="text-sm text-muted-foreground">
+                                    {deliverable.delivery_notes}
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="font-mono text-sm">
+                                {deliverable.order_id || 'N/A'}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="text-sm">{deliverable.file_name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {formatFileSize(deliverable.file_size)}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm">
+                                {deliverable.uploader?.display_name || 'Admin'}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm">
+                                {format(new Date(deliverable.created_at), 'MMM dd, yyyy HH:mm')}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={getDeliverableStatusColor(deliverable.status)}>
+                                {deliverable.status === 'pending' ? 'New' : 
+                                 deliverable.status === 'downloaded' ? 'Downloaded' : 
+                                 deliverable.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                onClick={() => downloadFile(
+                                  deliverable.file_url,
+                                  deliverable.file_name,
+                                  deliverable.id
+                                )}
+                                className="flex items-center gap-2"
+                              >
+                                <Download className="h-4 w-4" />
+                                Download
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
