@@ -5,3 +5,18 @@ verify_jwt = false
 
 [functions.send-password-reset]
 verify_jwt = false
+
+[functions.send-confirmation-email]
+verify_jwt = false
+
+[functions.send-deliverable-notification]
+verify_jwt = false
+
+[functions.get-user-by-email]
+verify_jwt = false
+
+[functions.get-user-by-id]
+verify_jwt = false
+
+[functions.assign-admin-role]
+verify_jwt = true
