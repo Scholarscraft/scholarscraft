@@ -336,10 +336,14 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Orders
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Completed Work
             </TabsTrigger>
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -459,6 +463,20 @@ const Dashboard = () => {
                     </Table>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="completed" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Completed Work</CardTitle>
+                <CardDescription>Download your completed assignments and papers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  Completed work functionality coming soon...
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

@@ -1664,6 +1664,13 @@ const Admin = () => {
         return <SamplePapersManager />;
       case "support":
         return renderSupportTickets();
+      case "deliverables":
+        return (
+          <div className="space-y-6">
+            <DeliverableUpload />
+            <DeliverableManager />
+          </div>
+        );
       case "users":
         return renderUsers();
       case "emails":

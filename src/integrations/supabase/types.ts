@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      deliverables: {
+        Row: {
+          created_at: string
+          delivery_notes: string | null
+          file_name: string
+          file_size: number
+          file_url: string
+          id: string
+          order_id: string | null
+          status: string
+          title: string
+          updated_at: string
+          uploaded_by: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_notes?: string | null
+          file_name: string
+          file_size: number
+          file_url: string
+          id?: string
+          order_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          uploaded_by: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_notes?: string | null
+          file_name?: string
+          file_size?: number
+          file_url?: string
+          id?: string
+          order_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliverables_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
