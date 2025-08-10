@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { NotificationDetail } from "./NotificationDetail";
 
 interface Notification {
   id: string;
@@ -28,6 +29,8 @@ const NotificationBell = () => {
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -182,7 +185,10 @@ const NotificationBell = () => {
                 className={`p-4 cursor-pointer border-b last:border-b-0 ${
                   !notification.read ? 'bg-accent/50' : ''
                 }`}
-                onClick={() => !notification.read && markAsRead(notification.id)}
+                onClick={() => {
+                  setSelectedNotification(notification);
+                  setIsDetailOpen(true);
+                }}
               >
                 <div className="flex items-start space-x-3 w-full">
                   <span className="text-lg">
@@ -210,6 +216,16 @@ const NotificationBell = () => {
           )}
         </div>
       </DropdownMenuContent>
+      
+      <NotificationDetail
+        notification={selectedNotification}
+        isOpen={isDetailOpen}
+        onClose={() => {
+          setIsDetailOpen(false);
+          setSelectedNotification(null);
+        }}
+        onMarkAsRead={markAsRead}
+      />
     </DropdownMenu>
   );
 };
