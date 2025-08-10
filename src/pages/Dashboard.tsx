@@ -83,16 +83,11 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if (user) {
-      fetchOrders();
-      fetchDeliverables();
-      fetchProfile();
-      setupRealtimeSubscriptions();
-    }
-  }, [user]);
-
-  const setupRealtimeSubscriptions = () => {
     if (!user) return;
+
+    fetchOrders();
+    fetchDeliverables();
+    fetchProfile();
 
     // Real-time subscription for deliverables
     const deliverablesChannel = supabase
@@ -124,6 +119,10 @@ const Dashboard = () => {
     return () => {
       supabase.removeChannel(deliverablesChannel);
     };
+  }, [user]);
+
+  const setupRealtimeSubscriptions = () => {
+    // This function is no longer needed as the subscriptions are handled in useEffect
   };
 
   const fetchOrders = async () => {
