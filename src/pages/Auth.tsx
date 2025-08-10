@@ -144,19 +144,29 @@ const Auth = () => {
     const email = formData.get("signin-email") as string;
     const password = formData.get("signin-password") as string;
 
+    // Basic validation
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
         password,
       });
 
       if (signInError) {
-        if (signInError.message.includes("Invalid")) {
-          setError("Invalid email or password. Please check your credentials.");
+        console.error("Sign in error:", signInError);
+        if (signInError.message.includes("Invalid login credentials")) {
+          setError("Invalid email or password. Please check your credentials and try again.");
+        } else if (signInError.message.includes("Email not confirmed")) {
+          setError("Please check your email and confirm your account before signing in.");
         } else {
           setError(signInError.message);
         }
-      } else {
+      } else if (data.user) {
         toast({
           title: "Welcome back!",
           description: "You have been signed in successfully.",
@@ -164,6 +174,7 @@ const Auth = () => {
         navigate("/");
       }
     } catch (err) {
+      console.error("Unexpected sign in error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
