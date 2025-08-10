@@ -26,7 +26,10 @@ export const DeliverablesList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     const fetchDeliverables = async () => {
       try {
