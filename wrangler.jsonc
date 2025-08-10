@@ -1,12 +1,7 @@
 {
-  "name": "scholarscraft", // Your worker name
-  "main": "src/index.js", // Change if your entry file is different
+  "name": "scholarscraft",
+  "main": "index.js", // change to your actual file path
   "compatibility_date": "2025-08-10",
-  // If your build output is static files:
-  "assets": {
-    "directory": "./dist" // Change to your build folder (e.g., "public", "out")
-  },
-  // Link directly to your domain
   "routes": [
     "scholarcraft.com/*",
     "www.scholarcraft.com/*"
