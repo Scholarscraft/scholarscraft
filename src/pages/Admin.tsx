@@ -12,6 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { SamplePapersManager } from "@/components/admin/SamplePapersManager";
+import { SupportTickets } from "@/components/admin/SupportTickets";
+import { DeliverableUpload } from "@/components/admin/DeliverableUpload";
+import { DeliverableManager } from "@/components/admin/DeliverableManager";
 import { 
   Users, 
   ShoppingCart, 
