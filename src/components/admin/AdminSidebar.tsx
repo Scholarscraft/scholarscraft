@@ -45,10 +45,22 @@ const sidebarItems = [
     description: "Manage Orders"
   },
   { 
+    id: "submissions", 
+    title: "Submissions", 
+    icon: Upload,
+    description: "Upload & Manage Work"
+  },
+  { 
     id: "users", 
     title: "Users", 
     icon: Users,
     description: "User Management"
+  },
+  { 
+    id: "support", 
+    title: "Support Tickets", 
+    icon: MessageCircle,
+    description: "Customer Support"
   },
   { 
     id: "finances", 
@@ -73,24 +85,6 @@ const sidebarItems = [
     title: "Bulk Email", 
     icon: Mail,
     description: "Email Marketing"
-  },
-  { 
-    id: "support", 
-    title: "Support Tickets", 
-    icon: MessageCircle,
-    description: "Customer Support"
-  },
-  { 
-    id: "upload-deliverable", 
-    title: "Upload Deliverable", 
-    icon: Upload,
-    description: "Upload Files to Users"
-  },
-  { 
-    id: "manage-deliverables", 
-    title: "Manage Deliverables", 
-    icon: FileCheck,
-    description: "View & Manage Uploads"
   },
   { 
     id: "files", 

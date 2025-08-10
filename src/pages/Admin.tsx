@@ -463,11 +463,21 @@ const Admin = () => {
 
   const renderOrders = () => (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Order Management</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Order Management</h2>
+        <Button 
+          onClick={() => setActiveTab("upload-deliverable")}
+          className="flex items-center gap-2"
+        >
+          <Upload className="h-4 w-4" />
+          Upload Completed Work
+        </Button>
+      </div>
+      
       <Card>
         <CardHeader>
           <CardTitle>All Orders</CardTitle>
-          <CardDescription>Manage orders, deadlines, and status updates</CardDescription>
+          <CardDescription>Manage orders, deadlines, and status updates. Upload completed work for delivered orders.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -487,7 +497,9 @@ const Admin = () => {
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">{order.order_id}</TableCell>
                   <TableCell>{order.profiles?.display_name || 'Unknown'}</TableCell>
-                  <TableCell>{order.topic}</TableCell>
+                  <TableCell className="max-w-[200px] truncate" title={order.topic}>
+                    {order.topic}
+                  </TableCell>
                   <TableCell>
                      <Badge variant={getStatusColor(order.status)}>
                        {order.status}
@@ -496,17 +508,40 @@ const Admin = () => {
                   <TableCell>${order.price?.toFixed(2) || '0.00'}</TableCell>
                   <TableCell>{format(new Date(order.deadline), 'MMM dd, yyyy')}</TableCell>
                   <TableCell>
-                    <Select onValueChange={(value) => updateOrderStatus(order.id, value)}>
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Update" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex gap-2">
+                      <Select onValueChange={(value) => updateOrderStatus(order.id, value)}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Update" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {order.status === 'completed' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setActiveTab("upload-deliverable");
+                            // Pre-fill the order ID in the upload form
+                            const orderIdInput = document.querySelector('input[placeholder*="order ID"]') as HTMLInputElement;
+                            if (orderIdInput) {
+                              setTimeout(() => {
+                                orderIdInput.value = order.order_id;
+                                orderIdInput.dispatchEvent(new Event('input', { bubbles: true }));
+                              }, 100);
+                            }
+                          }}
+                          className="flex items-center gap-1"
+                        >
+                          <Upload className="h-3 w-3" />
+                          Deliver
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -1667,17 +1702,23 @@ const Admin = () => {
         return <SamplePapersManager />;
       case "support":
         return <SupportTickets />;
-      case "upload-deliverable":
-        return <DeliverableUpload />;
-      case "manage-deliverables":
-        return <DeliverableManager />;
-      case "deliverables":
+      case "submissions":
         return (
           <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Submissions Management</h2>
+              <div className="text-sm text-muted-foreground">
+                Upload completed work and manage all deliverables
+              </div>
+            </div>
             <DeliverableUpload />
             <DeliverableManager />
           </div>
         );
+      case "upload-deliverable":
+        return <DeliverableUpload />;
+      case "manage-deliverables":
+        return <DeliverableManager />;
       case "users":
         return renderUsers();
       case "emails":
