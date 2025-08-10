@@ -16,10 +16,10 @@ const Pricing = () => {
 
   const calculatePrice = () => {
     const baseRates = {
-      essay: { undergraduate: 12, graduate: 15, phd: 18 },
-      research: { undergraduate: 15, graduate: 18, phd: 22 },
-      dissertation: { undergraduate: 20, graduate: 25, phd: 30 },
-      editing: { undergraduate: 8, graduate: 10, phd: 12 }
+      essay: { undergraduate: 8, graduate: 10, phd: 15 },
+      research: { undergraduate: 8, graduate: 10, phd: 15 },
+      dissertation: { undergraduate: 8, graduate: 10, phd: 15 },
+      editing: { undergraduate: 8, graduate: 10, phd: 15 }
     };
 
     const urgencyMultiplier = {
@@ -51,7 +51,7 @@ const Pricing = () => {
         "On-time delivery",
         "Plagiarism report"
       ],
-      priceRange: "$12-18",
+      priceRange: "$8-10",
       popular: false
     },
     {
@@ -64,7 +64,7 @@ const Pricing = () => {
         "Direct writer communication",
         "Progressive delivery"
       ],
-      priceRange: "$15-22",
+      priceRange: "$10-15",
       popular: true
     },
     {
@@ -77,7 +77,7 @@ const Pricing = () => {
         "Multiple quality reviews",
         "SMS updates"
       ],
-      priceRange: "$20-30",
+      priceRange: "$15-25",
       popular: false
     }
   ];
