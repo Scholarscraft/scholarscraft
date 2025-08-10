@@ -129,6 +129,7 @@ const Admin = () => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "orders", label: "Orders", icon: ShoppingCart },
+    { id: "submissions", label: "Submissions", icon: Upload },
     { id: "users", label: "Users", icon: Users },
     { id: "support", label: "Support Tickets", icon: Headphones },
     { id: "samples", label: "Sample Papers", icon: FileText },
