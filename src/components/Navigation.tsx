@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import SmoothLink from "./SmoothLink";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -106,7 +107,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <SmoothLink to="/" className="flex items-center space-x-3">
             <div className="bg-gradient-to-r from-primary to-primary-light p-2 rounded-lg">
               <GraduationCap className="h-6 w-6 text-primary-foreground" />
             </div>
@@ -114,22 +115,22 @@ const Navigation = () => {
               <h1 className="text-xl font-bold text-primary">ScholarsCraft</h1>
               <p className="text-xs text-muted-foreground">Academic Writing Services</p>
             </div>
-          </Link>
+          </SmoothLink>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <Link
+              <SmoothLink
                 key={item.name}
                 to={item.path}
-                className={`text-sm font-medium transition-colors duration-200 hover:text-primary ${
+                className={`text-sm font-medium transition-all duration-300 hover:text-primary story-link ${
                   isActivePath(item.path)
                     ? "text-primary border-b-2 border-accent"
                     : "text-foreground"
                 }`}
               >
                 {item.name}
-              </Link>
+              </SmoothLink>
             ))}
           </div>
 
@@ -149,17 +150,17 @@ const Navigation = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center">
+                    <SmoothLink to="/dashboard" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
                       Dashboard
-                    </Link>
+                    </SmoothLink>
                   </DropdownMenuItem>
                   {isAdmin() && (
                     <DropdownMenuItem asChild>
-                      <Link to="/admin" className="flex items-center">
+                      <SmoothLink to="/admin" className="flex items-center">
                         <Shield className="mr-2 h-4 w-4" />
                         Admin Panel
-                      </Link>
+                      </SmoothLink>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
@@ -172,13 +173,13 @@ const Navigation = () => {
             ) : (
               <div className="flex items-center space-x-3">
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/auth">
+                  <SmoothLink to="/auth">
                     <User className="h-4 w-4" />
                     Sign In
-                  </Link>
+                  </SmoothLink>
                 </Button>
                 <Button variant="premium" size="sm" asChild>
-                  <Link to="/contact">Get Quote</Link>
+                  <SmoothLink to="/contact">Get Quote</SmoothLink>
                 </Button>
               </div>
             )}
@@ -200,18 +201,18 @@ const Navigation = () => {
           <div className="md:hidden bg-background border-t border-border">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
-                <Link
+                <SmoothLink
                   key={item.name}
                   to={item.path}
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 text-sm font-medium transition-colors duration-200 hover:text-primary ${
+                  className={`block px-3 py-2 text-sm font-medium transition-all duration-300 hover:text-primary story-link ${
                     isActivePath(item.path)
                       ? "text-primary bg-accent/10"
                       : "text-foreground"
                   }`}
                 >
                   {item.name}
-                </Link>
+                </SmoothLink>
               ))}
               <div className="pt-4 pb-2 space-y-2">
                 <div className="flex justify-center mb-2">
@@ -228,17 +229,17 @@ const Navigation = () => {
                       </Avatar>
                     </div>
                     <Button variant="outline" size="sm" className="w-full" asChild>
-                      <Link to="/dashboard">
+                      <SmoothLink to="/dashboard">
                         <User className="h-4 w-4" />
                         Dashboard
-                      </Link>
+                      </SmoothLink>
                     </Button>
                     {isAdmin() && (
                       <Button variant="outline" size="sm" className="w-full" asChild>
-                        <Link to="/admin">
+                        <SmoothLink to="/admin">
                           <Shield className="h-4 w-4" />
                           Admin Panel
-                        </Link>
+                        </SmoothLink>
                       </Button>
                     )}
                     <Button variant="outline" size="sm" className="w-full" onClick={handleSignOut}>
@@ -249,13 +250,13 @@ const Navigation = () => {
                 ) : (
                   <div className="space-y-2">
                     <Button variant="outline" size="sm" className="w-full" asChild>
-                      <Link to="/auth">
+                      <SmoothLink to="/auth">
                         <User className="h-4 w-4" />
                         Sign In
-                      </Link>
+                      </SmoothLink>
                     </Button>
                     <Button variant="premium" size="sm" className="w-full" asChild>
-                      <Link to="/contact">Get Quote</Link>
+                      <SmoothLink to="/contact">Get Quote</SmoothLink>
                     </Button>
                   </div>
                 )}
