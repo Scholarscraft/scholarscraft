@@ -21,7 +21,7 @@ const Services = () => {
       title: "Essay Writing",
       description: "Custom essays for all academic levels",
       features: ["Original content", "Proper citations", "All subjects", "Any deadline"],
-      price: "From $12/page",
+      price: "From $8/page",
       popular: false
     },
     {
@@ -29,7 +29,7 @@ const Services = () => {
       title: "Research Papers",
       description: "In-depth research with analysis",
       features: ["Extensive research", "Statistical analysis", "Literature review", "Methodology"],
-      price: "From $15/page",
+      price: "From $8/page",
       popular: true
     },
     {
@@ -37,7 +37,7 @@ const Services = () => {
       title: "Dissertations",
       description: "Complete dissertation support",
       features: ["Chapter-by-chapter", "Proposal writing", "Defense preparation", "Revisions"],
-      price: "From $20/page",
+      price: "From $10/page",
       popular: false
     },
     {
@@ -45,7 +45,7 @@ const Services = () => {
       title: "Case Studies",
       description: "Business and academic case analysis",
       features: ["Problem analysis", "Solution development", "Industry research", "Recommendations"],
-      price: "From $14/page",
+      price: "From $10/page",
       popular: false
     },
     {
@@ -53,7 +53,7 @@ const Services = () => {
       title: "Thesis Writing",
       description: "Master's and PhD thesis support",
       features: ["Research design", "Data collection", "Analysis", "Writing"],
-      price: "From $18/page",
+      price: "From $10/page",
       popular: false
     },
     {
