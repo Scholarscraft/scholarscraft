@@ -150,7 +150,7 @@ const Admin = () => {
         return;
       }
       
-      if (!isAdmin()) {
+      if (role !== 'admin') {
         toast({
           title: "Access Denied",
           description: "You don't have permission to access the admin panel.",
@@ -166,7 +166,7 @@ const Admin = () => {
 
   // Fetch all data
   useEffect(() => {
-    if (loading || !isAdmin()) return;
+    if (loading || role !== 'admin') return;
 
     const fetchDashboardData = async () => {
       try {
@@ -1780,7 +1780,7 @@ const Admin = () => {
     );
   }
 
-  if (!isAdmin()) {
+  if (role !== 'admin') {
     return (
       <div className="container mx-auto py-8">
         <Card>
