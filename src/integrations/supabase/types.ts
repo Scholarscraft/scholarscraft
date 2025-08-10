@@ -361,6 +361,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_deliverable_download_url: {
+        Args: { deliverable_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _user_id: string
