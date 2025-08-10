@@ -432,6 +432,31 @@ const Dashboard = () => {
     }
   };
 
+  const markAsComplete = async (deliverableId: string) => {
+    try {
+      const { error } = await supabase
+        .from('deliverables')
+        .update({ status: 'completed' })
+        .eq('id', deliverableId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Marked as complete",
+        description: "Thank you for confirming the work is satisfactory!",
+      });
+
+      // Refresh deliverables
+      fetchDeliverables();
+    } catch (error: any) {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatFileSize = (bytes: number) => {
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
   };
@@ -444,6 +469,8 @@ const Dashboard = () => {
         return 'bg-secondary text-secondary-foreground border-border';
       case 'downloaded':
         return 'bg-muted text-muted-foreground border-border';
+      case 'completed':
+        return 'bg-secondary text-secondary-foreground border-border';
       default:
         return 'bg-muted text-muted-foreground border-border';
     }
@@ -652,7 +679,7 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {deliverables.filter(d => d.status === 'downloaded').length}
+                    {deliverables.filter(d => ['downloaded', 'completed'].includes(d.status)).length}
                   </div>
                 </CardContent>
               </Card>
@@ -730,22 +757,36 @@ const Dashboard = () => {
                               <Badge className={getDeliverableStatusColor(deliverable.status)}>
                                 {deliverable.status === 'pending' ? 'New' : 
                                  deliverable.status === 'downloaded' ? 'Downloaded' : 
+                                 deliverable.status === 'completed' ? 'Complete' :
                                  deliverable.status}
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <Button
-                                size="sm"
-                                onClick={() => downloadFile(
-                                  deliverable.file_url,
-                                  deliverable.file_name,
-                                  deliverable.id
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => downloadFile(
+                                    deliverable.file_url,
+                                    deliverable.file_name,
+                                    deliverable.id
+                                  )}
+                                  className="flex items-center gap-2"
+                                >
+                                  <Download className="h-4 w-4" />
+                                  Download
+                                </Button>
+                                {deliverable.status === 'pending' && (
+                                  <Button
+                                    onClick={() => markAsComplete(deliverable.id)}
+                                    size="sm"
+                                    variant="outline"
+                                    className="flex items-center gap-2"
+                                  >
+                                    <CheckCircle className="h-4 w-4" />
+                                    Mark Complete
+                                  </Button>
                                 )}
-                                className="flex items-center gap-2"
-                              >
-                                <Download className="h-4 w-4" />
-                                Download
-                              </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}

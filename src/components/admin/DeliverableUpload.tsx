@@ -41,13 +41,34 @@ export const DeliverableUpload = () => {
     setSearching(true);
     try {
       if (identificationMethod === "email") {
-        // Search by email - for now we'll require users to use order ID
-        toast({
-          title: "Feature limitation",
-          description: "Please use Order ID to identify users for now",
-          variant: "destructive"
-        });
-        return;
+        // Search by email - get user profile and their auth user email
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .ilike('display_name', `%${emailInput.trim()}%`);
+
+        if (error) throw error;
+
+        if (profiles && profiles.length > 0) {
+          // For now, take the first match - in production you might want to show a list
+          const profile = profiles[0];
+          
+          // Get user's auth email
+          const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(profile.user_id);
+          
+          setUserPreview({
+            id: profile.user_id,
+            display_name: profile.display_name || 'Unknown User',
+            email: user?.email
+          });
+          setOrderPreview(null); // Clear any previous order preview
+        } else {
+          toast({
+            title: "User not found",
+            description: "No user found with that email/name",
+            variant: "destructive"
+          });
+        }
       } else {
         // Search by order ID
         const { data: orders, error } = await supabase
@@ -67,6 +88,9 @@ export const DeliverableUpload = () => {
             .eq('user_id', order.user_id)
             .single();
           
+          // Get user's auth email
+          const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(order.user_id);
+          
           setOrderPreview({
             order_id: order.order_id,
             topic: order.topic,
@@ -74,7 +98,8 @@ export const DeliverableUpload = () => {
           });
           setUserPreview({
             id: order.user_id,
-            display_name: profiles?.display_name || 'Unknown User'
+            display_name: profiles?.display_name || 'Unknown User',
+            email: user?.email
           });
         } else {
           toast({
