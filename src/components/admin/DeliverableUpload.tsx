@@ -41,50 +41,41 @@ export const DeliverableUpload = () => {
     setSearching(true);
     try {
       if (identificationMethod === "email") {
-        // Search by email using admin getUserByEmail
-        const { data: authUser, error: authError } = await supabase.auth.admin.getUserByEmail(emailInput.trim());
-        
-        if (authError) {
-          console.error('Auth error:', authError);
+        // Search by email - call edge function to find user by email
+        const { data: userData, error: userError } = await supabase.functions.invoke('get-user-by-email', {
+          body: { email: emailInput.trim() }
+        });
+
+        if (userError || !userData?.user) {
           toast({
             title: "User not found",
-            description: "No user found with that email",
+            description: "No user found with that email address",
             variant: "destructive"
           });
-          setUserPreview(null);
-          setOrderPreview(null);
           return;
         }
 
-        if (authUser.user) {
-          // Get additional profile info
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('display_name')
-            .eq('user_id', authUser.user.id)
-            .single();
-
-          setUserPreview({
-            id: authUser.user.id,
-            display_name: profile?.display_name || authUser.user.email || 'Unknown User',
-            email: authUser.user.email || emailInput.trim()
-          });
-          setOrderPreview(null);
-        } else {
-          setUserPreview(null);
-          setOrderPreview(null);
-          toast({
-            title: "User not found",
-            description: "No user found with that email",
-            variant: "destructive"
-          });
-        }
+        const user = userData.user;
+        
+        // Get user profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+        setUserPreview({
+          id: user.id,
+          display_name: profile?.display_name || user.email || 'Unknown User',
+          email: user.email
+        });
+        setOrderPreview(null); // Clear any previous order preview
       } else {
         // Search by order ID
         const { data: orders, error } = await supabase
           .from('orders')
           .select('order_id, topic, user_id')
-          .eq('order_id', orderIdInput.trim().toUpperCase());
+          .eq('order_id', orderIdInput.trim());
 
         if (error) throw error;
 
@@ -92,14 +83,16 @@ export const DeliverableUpload = () => {
           const order = orders[0];
           
           // Get user profile for the order
-          const { data: profile } = await supabase
+          const { data: profiles } = await supabase
             .from('profiles')
             .select('display_name')
             .eq('user_id', order.user_id)
             .single();
           
-          // Get user's auth email
-          const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(order.user_id);
+          // Get user's auth email via edge function
+          const { data: userData } = await supabase.functions.invoke('get-user-by-id', {
+            body: { userId: order.user_id }
+          });
           
           setOrderPreview({
             order_id: order.order_id,
@@ -108,12 +101,10 @@ export const DeliverableUpload = () => {
           });
           setUserPreview({
             id: order.user_id,
-            display_name: profile?.display_name || 'Unknown User',
-            email: user?.email || 'Not available'
+            display_name: profiles?.display_name || 'Unknown User',
+            email: userData?.user?.email
           });
         } else {
-          setUserPreview(null);
-          setOrderPreview(null);
           toast({
             title: "Order not found",
             description: "No order found with that ID",
@@ -122,14 +113,11 @@ export const DeliverableUpload = () => {
         }
       }
     } catch (error: any) {
-      console.error('Search error:', error);
       toast({
         title: "Search failed",
         description: error.message,
         variant: "destructive"
       });
-      setUserPreview(null);
-      setOrderPreview(null);
     } finally {
       setSearching(false);
     }
@@ -210,7 +198,7 @@ export const DeliverableUpload = () => {
 
       if (dbError) throw dbError;
 
-      // Send notification email (we'll create this edge function)
+      // Send notification email
       try {
         await supabase.functions.invoke('send-deliverable-notification', {
           body: {
@@ -227,7 +215,7 @@ export const DeliverableUpload = () => {
 
       toast({
         title: "Success",
-        description: "Deliverable uploaded successfully"
+        description: "Deliverable uploaded successfully and user notified"
       });
 
       // Reset form
