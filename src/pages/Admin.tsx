@@ -150,9 +150,9 @@ const Admin = () => {
         return;
       }
       
-      if (role !== 'admin') {
+      if (!isAdmin()) {
         toast({
-          title: "Access Denied",
+          title: "Access Denied", 
           description: "You don't have permission to access the admin panel.",
           variant: "destructive",
         });
@@ -162,11 +162,11 @@ const Admin = () => {
       
       setLoading(false);
     }
-  }, [user, roleLoading, isAdmin, navigate, toast]);
+  }, [user, roleLoading, isAdmin, navigate, toast, role]);
 
   // Fetch all data
   useEffect(() => {
-    if (loading || role !== 'admin') return;
+    if (loading || !isAdmin()) return;
 
     const fetchDashboardData = async () => {
       try {
@@ -251,6 +251,43 @@ const Admin = () => {
     };
 
     fetchDashboardData();
+
+    // Set up real-time subscriptions for orders
+    const ordersChannel = supabase
+      .channel('orders-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders'
+        },
+        () => {
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    // Set up real-time subscriptions for support tickets
+    const ticketsChannel = supabase
+      .channel('tickets-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'support_tickets'
+        },
+        () => {
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(ticketsChannel);
+    };
   }, [loading, isAdmin, toast]);
 
   const getStatusColor = (status: string) => {

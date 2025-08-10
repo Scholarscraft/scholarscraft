@@ -48,20 +48,44 @@ export const DeliverablesList = () => {
     };
 
     fetchDeliverables();
+
+    // Set up real-time subscription for deliverables
+    const channel = supabase
+      .channel('deliverables-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'deliverables',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          // Refetch deliverables when changes occur
+          fetchDeliverables();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const handleDownload = async (deliverable: Deliverable) => {
     try {
-      // Get the signed URL for download
-      const { data, error } = await supabase.storage
-        .from('deliverables')
-        .createSignedUrl(deliverable.file_url.split('/').pop() || '', 60);
+      // Use the secure database function to get download URL
+      const { data, error } = await supabase.rpc('get_deliverable_download_url', {
+        deliverable_id: deliverable.id
+      });
 
-      if (error) throw error;
+      if (error || !data) {
+        throw new Error('Failed to get download URL');
+      }
 
       // Create a temporary link and trigger download
       const link = document.createElement('a');
-      link.href = data.signedUrl;
+      link.href = data;
       link.download = deliverable.file_name;
       document.body.appendChild(link);
       link.click();
