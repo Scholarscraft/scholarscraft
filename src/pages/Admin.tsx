@@ -83,6 +83,22 @@ interface SupportTicket {
   };
 }
 
+interface QuoteRequest {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string;
+  service: string;
+  academic_level: string;
+  pages: number;
+  deadline: string;
+  message: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface AdminStats {
   totalOrders: number;
   totalRevenue: number;
@@ -92,6 +108,7 @@ interface AdminStats {
   overdueOrders: number;
   openTickets: number;
   totalTickets: number;
+  quoteRequests: number;
 }
 
 interface AnalyticsData {
@@ -110,6 +127,7 @@ const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
+  const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
   const [stats, setStats] = useState<AdminStats>({
     totalOrders: 0,
     totalRevenue: 0,
@@ -118,7 +136,8 @@ const Admin = () => {
     completedOrders: 0,
     overdueOrders: 0,
     openTickets: 0,
-    totalTickets: 0
+    totalTickets: 0,
+    quoteRequests: 0
   });
   const [emailContent, setEmailContent] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
@@ -129,6 +148,7 @@ const Admin = () => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "orders", label: "Orders", icon: ShoppingCart },
+    { id: "quote-requests", label: "Quote Requests", icon: MessageSquare },
     { id: "submissions", label: "Submissions", icon: Upload },
     { id: "users", label: "Users", icon: Users },
     { id: "support", label: "Support Tickets", icon: Headphones },
@@ -193,6 +213,15 @@ const Admin = () => {
 
         if (ticketsError) throw ticketsError;
 
+        // Fetch quote requests using the secure function
+        const { data: quoteRequestsData, error: quoteError } = await supabase.functions.invoke('get-quote-requests-with-audit');
+        let quotesData: QuoteRequest[] = [];
+        if (quoteError) {
+          console.warn('Error fetching quote requests:', quoteError);
+        } else {
+          quotesData = quoteRequestsData || [];
+        }
+
         // Join orders with profiles
         const ordersWithProfiles = ordersData?.map(order => ({
           ...order,
@@ -208,6 +237,7 @@ const Admin = () => {
         setOrders(ordersWithProfiles);
         setProfiles(allProfiles || []);
         setSupportTickets(ticketsWithProfiles);
+        setQuoteRequests(quotesData);
 
         // Calculate stats
         const totalOrders = ordersData?.length || 0;
@@ -229,7 +259,8 @@ const Admin = () => {
           completedOrders,
           overdueOrders,
           openTickets,
-          totalTickets
+          totalTickets,
+          quoteRequests: quotesData.length
         });
 
         // Generate sample analytics data (replace with real analytics service)
@@ -342,6 +373,33 @@ const Admin = () => {
       toast({
         title: "Error",
         description: "Failed to update order status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateQuoteStatus = async (quoteId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('quote_requests')
+        .update({ status: newStatus })
+        .eq('id', quoteId);
+
+      if (error) throw error;
+
+      setQuoteRequests(quoteRequests.map(request => 
+        request.id === quoteId ? { ...request, status: newStatus } : request
+      ));
+
+      toast({
+        title: "Success",
+        description: "Quote request status updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating quote request status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update quote request status",
         variant: "destructive",
       });
     }
@@ -579,6 +637,88 @@ const Admin = () => {
                           Deliver
                         </Button>
                       )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderQuoteRequests = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Quote Requests Management</h2>
+        <div className="text-sm text-muted-foreground">
+          Total requests: {quoteRequests.length}
+        </div>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>All Quote Requests</CardTitle>
+          <CardDescription>
+            Manage customer quote requests with secure access logging. All access to personal data is audited.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Service</TableHead>
+                <TableHead>Academic Level</TableHead>
+                <TableHead>Pages</TableHead>
+                <TableHead>Deadline</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {quoteRequests.map((request) => (
+                <TableRow key={request.id}>
+                  <TableCell className="font-medium">{request.name}</TableCell>
+                  <TableCell>{request.email}</TableCell>
+                  <TableCell>{request.service}</TableCell>
+                  <TableCell>{request.academic_level}</TableCell>
+                  <TableCell>{request.pages}</TableCell>
+                  <TableCell>{format(new Date(request.deadline), 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusColor(request.status)}>
+                      {request.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{format(new Date(request.created_at), 'MMM dd, yyyy')}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Select onValueChange={(value) => updateQuoteStatus(request.id, value)}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="Update" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="contacted">Contacted</SelectItem>
+                          <SelectItem value="quoted">Quoted</SelectItem>
+                          <SelectItem value="converted">Converted</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          toast({
+                            title: "Contact Customer",
+                            description: `Email: ${request.email}${request.phone ? `, Phone: ${request.phone}` : ''}`,
+                          });
+                        }}
+                      >
+                        Contact
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -1736,6 +1876,8 @@ const Admin = () => {
         return renderDashboard();
       case "orders":
         return renderOrders();
+      case "quote-requests":
+        return renderQuoteRequests();
       case "samples":
         return <SamplePapersManager />;
       case "support":

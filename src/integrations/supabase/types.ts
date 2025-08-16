@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -175,6 +175,36 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      quote_request_audit: {
+        Row: {
+          access_type: string
+          accessed_at: string | null
+          accessed_by: string
+          id: string
+          ip_address: unknown | null
+          quote_request_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string | null
+          accessed_by: string
+          id?: string
+          ip_address?: unknown | null
+          quote_request_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string | null
+          accessed_by?: string
+          id?: string
+          ip_address?: unknown | null
+          quote_request_id?: string
+          user_agent?: string | null
         }
         Relationships: []
       }
@@ -350,7 +380,54 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      quote_requests_masked: {
+        Row: {
+          academic_level: string | null
+          created_at: string | null
+          deadline: string | null
+          email: string | null
+          id: string | null
+          message: string | null
+          name: string | null
+          pages: number | null
+          phone: string | null
+          service: string | null
+          status: string | null
+          subject: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          academic_level?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          email?: never
+          id?: string | null
+          message?: never
+          name?: never
+          pages?: number | null
+          phone?: never
+          service?: string | null
+          status?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          academic_level?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          email?: never
+          id?: string | null
+          message?: never
+          name?: never
+          pages?: number | null
+          phone?: never
+          service?: string | null
+          status?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       generate_order_id: {
@@ -365,12 +442,34 @@ export type Database = {
         Args: { deliverable_id: string }
         Returns: string
       }
+      get_quote_requests_with_audit: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          academic_level: string
+          created_at: string
+          deadline: string
+          email: string
+          id: string
+          message: string
+          name: string
+          pages: number
+          phone: string
+          service: string
+          status: string
+          subject: string
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
+      }
+      mask_sensitive_data: {
+        Args: { input_text: string }
+        Returns: string
       }
     }
     Enums: {
