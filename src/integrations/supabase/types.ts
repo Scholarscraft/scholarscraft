@@ -380,54 +380,7 @@ export type Database = {
       }
     }
     Views: {
-      quote_requests_masked: {
-        Row: {
-          academic_level: string | null
-          created_at: string | null
-          deadline: string | null
-          email: string | null
-          id: string | null
-          message: string | null
-          name: string | null
-          pages: number | null
-          phone: string | null
-          service: string | null
-          status: string | null
-          subject: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          academic_level?: string | null
-          created_at?: string | null
-          deadline?: string | null
-          email?: never
-          id?: string | null
-          message?: never
-          name?: never
-          pages?: number | null
-          phone?: never
-          service?: string | null
-          status?: string | null
-          subject?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          academic_level?: string | null
-          created_at?: string | null
-          deadline?: string | null
-          email?: never
-          id?: string | null
-          message?: never
-          name?: never
-          pages?: number | null
-          phone?: never
-          service?: string | null
-          status?: string | null
-          subject?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       generate_order_id: {
