@@ -47,6 +47,90 @@ const handler = async (req: Request): Promise<Response> => {
       fileNames
     }: QuoteRequest = await req.json();
 
+    // Input validation
+    if (!name || name.length > 100 || name.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Invalid name" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email) || email.length > 255) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (phone && phone.length > 20) {
+      return new Response(
+        JSON.stringify({ error: "Invalid phone" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!subject || subject.length > 200 || subject.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Invalid subject" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (message && message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: "Message too long" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const pagesNum = parseInt(pages);
+    if (isNaN(pagesNum) || pagesNum < 1 || pagesNum > 1000) {
+      return new Response(
+        JSON.stringify({ error: "Invalid pages" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Rate limiting
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    
+    const { data: rateLimitData, error: rateLimitError } = await supabase
+      .from('quote_submission_rate_limit')
+      .select('*')
+      .eq('ip_address', ipAddress)
+      .eq('email', email)
+      .single();
+
+    if (rateLimitData) {
+      const timeSinceFirst = new Date().getTime() - new Date(rateLimitData.first_submission_at).getTime();
+      const minutesSinceFirst = timeSinceFirst / (1000 * 60);
+      
+      if (minutesSinceFirst < 60 && rateLimitData.submission_count >= 3) {
+        console.warn(`Rate limit exceeded for ${email} from ${ipAddress}`);
+        return new Response(
+          JSON.stringify({ error: "Too many requests. Please try again later." }),
+          { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      await supabase
+        .from('quote_submission_rate_limit')
+        .update({
+          submission_count: rateLimitData.submission_count + 1,
+          last_submission_at: new Date().toISOString()
+        })
+        .eq('id', rateLimitData.id);
+    } else {
+      await supabase
+        .from('quote_submission_rate_limit')
+        .insert({
+          ip_address: ipAddress,
+          email: email,
+          submission_count: 1
+        });
+    }
+
     console.log("Received quote request:", { name, email, subject, service });
 
     // Insert quote request into database
@@ -164,7 +248,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in submit-quote function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An error occurred processing your request" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

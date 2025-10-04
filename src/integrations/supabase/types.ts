@@ -256,6 +256,33 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_submission_rate_limit: {
+        Row: {
+          email: string
+          first_submission_at: string | null
+          id: string
+          ip_address: unknown
+          last_submission_at: string | null
+          submission_count: number | null
+        }
+        Insert: {
+          email: string
+          first_submission_at?: string | null
+          id?: string
+          ip_address: unknown
+          last_submission_at?: string | null
+          submission_count?: number | null
+        }
+        Update: {
+          email?: string
+          first_submission_at?: string | null
+          id?: string
+          ip_address?: unknown
+          last_submission_at?: string | null
+          submission_count?: number | null
+        }
+        Relationships: []
+      }
       sample_papers: {
         Row: {
           academic_level: string
@@ -357,6 +384,36 @@ export type Database = {
           },
         ]
       }
+      user_role_audit: {
+        Row: {
+          action: string
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          new_role: Database["public"]["Enums"]["app_role"] | null
+          old_role: Database["public"]["Enums"]["app_role"] | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          new_role?: Database["public"]["Enums"]["app_role"] | null
+          old_role?: Database["public"]["Enums"]["app_role"] | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          new_role?: Database["public"]["Enums"]["app_role"] | null
+          old_role?: Database["public"]["Enums"]["app_role"] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -383,6 +440,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_rate_limits: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       generate_order_id: {
         Args: Record<PropertyKey, never>
         Returns: string

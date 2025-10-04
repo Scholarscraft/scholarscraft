@@ -13,10 +13,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.get-user-by-email]
-verify_jwt = false
+verify_jwt = true
 
 [functions.get-user-by-id]
-verify_jwt = false
+verify_jwt = true
 
 [functions.assign-admin-role]
 verify_jwt = true

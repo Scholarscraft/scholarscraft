@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 import { 
   MessageCircle, 
   Mail, 
@@ -16,6 +17,19 @@ import {
   Send
 } from "lucide-react";
 import whatsappLogo from "@/assets/whatsapp-logo.svg";
+
+const quoteFormSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  email: z.string().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  phone: z.string().max(20, "Phone must be less than 20 characters").optional(),
+  subject: z.string().min(1, "Subject is required").max(200, "Subject must be less than 200 characters"),
+  service: z.string().min(1, "Service is required"),
+  deadline: z.string().min(1, "Deadline is required"),
+  pages: z.string().min(1, "Pages is required"),
+  academicLevel: z.string().min(1, "Academic level is required"),
+  message: z.string().max(5000, "Message must be less than 5000 characters").optional(),
+  couponCode: z.string().optional(),
+});
 
 const Contact = () => {
   const { toast } = useToast();
@@ -39,6 +53,34 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
+      // Validate form data
+      const validationResult = quoteFormSchema.safeParse(formData);
+      if (!validationResult.success) {
+        const errors = validationResult.error.issues.map(err => err.message).join(", ");
+        toast({
+          title: "Validation Error",
+          description: errors,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validate file size
+      if (formData.files && formData.files.length > 0) {
+        const maxFileSize = 10 * 1024 * 1024; // 10MB
+        for (let i = 0; i < formData.files.length; i++) {
+          if (formData.files[i].size > maxFileSize) {
+            toast({
+              title: "File Too Large",
+              description: "Each file must be less than 10MB",
+              variant: "destructive",
+            });
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      }
       // Upload files if any
       const fileNames: string[] = [];
       if (formData.files && formData.files.length > 0) {
